@@ -1,7 +1,23 @@
 <template>
 <div class="container">
   <div class="column">
-    <div>{{ $route.params.song_name }}</div>
+    <div class="title">
+      <router-link :to="{
+        name: 'songs' ,
+        params: {
+          name: $route.params.artist_name ,
+          id: $route.params.artist_id ,
+        }
+      }">
+        <span class="icon is-medium has-text-success">
+          <i class="fas fa-arrow-circle-left"></i>
+        </span>
+      </router-link>
+      <span>{{ $route.params.song_name }}</span>
+      <span class="icon is-medium has-text-success">
+        <i class="fas fa-plus-circle"></i>
+      </span>
+    </div>
     <router-link :to="{
       name: 'create_songdetail',
       params:{
@@ -9,10 +25,25 @@
           song_name: $route.params.song_name ,
           artist_name: $route.params.artist_name ,
       }
-    }">新規登録</router-link>
-    <ul v-for="songdetail in songdetails">
-      <li>{{ songdetail.score }} {{ songdetail.comment }} {{ songdetail.created_at.date }} </li>
-    </ul>
+    }" class="is-pulled-right">新規登録</router-link>
+
+    <table class="table is-fullwidth is-hoverable is-narrow is-bordered">
+      <thead>
+        <tr>
+          <th>登録日</th>
+          <th>点数</th>
+          <th>コメント</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="songdetail in songdetails">
+          <th>{{ songdetail.created_at }}</th>
+          <td>{{ songdetail.score }}</td>
+          <td>{{ songdetail.comment }}</td>
+        </tr>
+      </tbody>
+    </table>
+
   </div>
 </div>
 </template>

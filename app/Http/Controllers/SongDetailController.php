@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Resource\SongDetail as SongDetailResouce ;
+use App\Http\Resources\SongDetail as SongDetailResouce ;
 use App\Song ;
 use App\SongDetail ;
 
@@ -16,7 +16,7 @@ class SongDetailController extends Controller
      */
     public function index()
     {
-        //
+        return SongDetailResouce::collection( SongDetail::all() );
     }
 
     /**

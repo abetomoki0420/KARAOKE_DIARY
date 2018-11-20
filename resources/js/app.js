@@ -36,6 +36,17 @@ Vue.component('ContentMenu', require('./components/ContentMenu.vue'));
 //     return Vue.component(_.last(key.split('/')).split('.')[0], files(key))
 // })
 
+/* Add Fontawesome Components */
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faCoffee)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

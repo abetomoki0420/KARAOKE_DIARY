@@ -1,28 +1,42 @@
 <template>
-<div class="container">
   <div class="column">
-    <div >{{ $route.params.name }} </div>
-    <ul v-if="!loading" v-for="song in songs">
-      <li>
+    <div class="title">
+      <router-link :to="{
+         name: 'main'}">
+        <span class="icon is-medium has-text-success">
+          <i class="fas fa-arrow-circle-left"></i>
+        </span>
+      </router-link>
+      <span>{{ $route.params.name }}</span>
+      <!-- <span class="icon is-medium has-text-success">
+        <i class="fas fa-plus-circle"></i>
+      </span> -->
+      <register-song-modal :artist-id="$route.params.id"></register-song-modal>
+    </div>
+
+    <div v-if="!loading" class="tile is-ancestor">
+      <div v-for="song in songs" class="tile is-parent is-4">
         <router-link :to="{
-            name: 'song_detail',
-            params:{
-              id: song.id ,
-              song_name: song.name ,
-              artist_name: $route.params.name ,
-            }
-          }">{{song.name}}</router-link>
-      </li>
-    </ul>
+          name: 'song_detail',
+          params:{
+            id: song.id ,
+            artist_id : $route.params.id ,
+            song_name: song.name ,
+            artist_name: $route.params.name ,
+          }
+        }" class="tile is-child box">
+          <p class="title">{{song.name}}</p>
+        </router-link>
+      </div>
+    </div>
     <div v-if="loading">
       Now Loading...
     </div>
-
   </div>
-</div>
 </template>
 
 <script>
+  import RegisterSongModal from './RegisterSongModal.vue'
   export default {
       data: function(){
         return{
@@ -30,6 +44,9 @@
           loading: true ,
         }
       },
+      components:{
+        RegisterSongModal ,
+      } ,
       created(){
         this.getSongs();
       },

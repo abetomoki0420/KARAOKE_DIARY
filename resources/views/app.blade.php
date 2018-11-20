@@ -13,10 +13,7 @@
   <my-header></my-header>
   <div class="container">
     <div class="columns">
-      <content-menu></content-menu>
-      <div class="column">
-        <router-view></router-view>
-      </div>
+      <router-view></router-view>
     </div>
   </div>
 </div>
