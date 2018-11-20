@@ -14,18 +14,20 @@
         </span>
       </router-link>
       <span>{{ $route.params.song_name }}</span>
-      <span class="icon is-medium has-text-success">
+
+      <!-- <span class="icon is-medium has-text-success">
         <i class="fas fa-plus-circle"></i>
-      </span>
+      </span> -->
+      <register-song-detail-modal :song-id="$route.params.id" @registered="reload"></register-song-detail-modal>
     </div>
-    <router-link :to="{
+    <!-- <router-link :to="{
       name: 'create_songdetail',
       params:{
           id: $route.params.id ,
           song_name: $route.params.song_name ,
           artist_name: $route.params.artist_name ,
       }
-    }" class="is-pulled-right">新規登録</router-link>
+    }" class="is-pulled-right">新規登録</router-link> -->
 
     <table class="table is-fullwidth is-hoverable is-narrow is-bordered">
       <thead>
@@ -49,6 +51,7 @@
 </template>
 
 <script>
+  import RegisterSongDetailModal from './RegisterSongDetailModal.vue'
   export default {
       data: function(){
         return{
@@ -56,6 +59,9 @@
           loading: true ,
         }
       },
+      components: {
+        RegisterSongDetailModal
+      } ,
       created(){
         this.getSongDetails();
       },
@@ -68,6 +74,9 @@
             console.log(res);
           });
         },
+        reload: function(){
+          this.getSongDetails()
+        }
       }
   }
 </script>

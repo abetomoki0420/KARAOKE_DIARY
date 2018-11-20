@@ -5,13 +5,20 @@
     </span>
     <ModalBase @close="closeModal" v-if="modal">
       <div class="field">
-        <label class="label">アーティスト名</label>
+        <label class="label">点数</label>
         <div class="control">
-          <input id="input" v-model="name" class="input" type="text" placeholder="例 Mr.Children" autofocus>
+          <input id="input" v-model="score" class="input" type="text">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">コメント</label>
+        <div class="control">
+          <textarea v-model="comment" class="textarea"></textarea>
         </div>
       </div>
       <template slot="submit">
-        <button class="button is-primary" @click.prevent="registerArtist">登録</button>
+        <button class="button is-primary" @click.prevent="registerSongDetail">登録</button>
       </template>
     </ModalBase>
   </span>
@@ -25,30 +32,39 @@ export default {
   data() {
     return {
       modal: false,
-      name: '' ,
+      score : '' ,
+      comment: ''
+    }
+  },
+  props: {
+    songId: {
+      type: Number ,
+      required: true ,
     }
   },
   methods: {
     openModal() {
       this.modal = true
-      Vue.nextTick( ()=>{
+      Vue.nextTick( () => {
         document.getElementById('input').focus()
       })
     },
     closeModal() {
       this.modal = false
     },
-    registerArtist: function(){
-      axios.post('/api/artists' , {
-        name: this.name ,
+    registerSongDetail: function(){
+      axios.post('/api/song_details' , {
+        id: this.songId ,
+        score: this.score ,
+        comment: this.comment ,
       })
       .then( (res) => {
-        this.name = ""
-        this.closeModal();
+        this.score = ""
+        this.comment = ""
+        this.closeModal()
         this.$emit('registered')
       })
     }
-
   }
 }
 </script>

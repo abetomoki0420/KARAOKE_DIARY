@@ -11,7 +11,7 @@
       <!-- <span class="icon is-medium has-text-success">
         <i class="fas fa-plus-circle"></i>
       </span> -->
-      <register-song-modal :artist-id="$route.params.id"></register-song-modal>
+      <register-song-modal :artist-id="$route.params.id" @registered="reload"></register-song-modal>
     </div>
 
     <div v-if="!loading" class="tile is-ancestor">
@@ -58,6 +58,9 @@
             this.loading = false ;
             console.log(res);
           });
+        },
+        reload: function(){
+          this.getSongs()
         },
       }
   }

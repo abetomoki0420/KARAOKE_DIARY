@@ -2,10 +2,7 @@
   <div class="column">
     <div class="title">
       <span>アーティスト一覧</span>
-      <!-- <span class="icon is-medium has-text-success">
-        <i class="fas fa-plus-circle"></i>
-      </span> -->
-      <register-artist-modal></register-artist-modal>
+      <register-artist-modal @registered="reload"></register-artist-modal>
     </div>
     <div class="tile is-ancestor">
       <div v-for="artist in artists" class="tile is-parent is-4">
@@ -48,6 +45,9 @@
             this.artists = res.data.data ;
           });
         },
+        reload: function(){
+          this.getArtists() 
+        }
       }
   }
 </script>

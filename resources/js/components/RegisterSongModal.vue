@@ -1,13 +1,13 @@
 <template>
   <span>
-    <span @click="openModal" class="icon is-medium has-text-success">
+    <span @click="openModal" class="icon is-medium has-text-success addbtn">
       <i class="fas fa-plus-circle"></i>
     </span>
     <ModalBase @close="closeModal" v-if="modal">
       <div class="field">
         <label class="label">曲名</label>
         <div class="control">
-          <input v-model="title" class="input is-success" type="text" placeholder="例 HANABI" autofocus>
+          <input id="input" v-model="title" class="input is-success" type="text" placeholder="例 HANABI" autofocus>
         </div>
       </div>
       <template slot="submit">
@@ -37,6 +37,9 @@ export default {
   methods: {
     openModal() {
       this.modal = true
+      Vue.nextTick( () => {
+        document.getElementById('input').focus()
+      })
     },
     closeModal() {
       this.modal = false
@@ -47,10 +50,18 @@ export default {
         title: this.title
       })
       .then( (res) => {
-        this.closeModal() ;
         this.title = ""
+        this.closeModal()
+        this.$emit('registered')
       })
     }
   }
 }
 </script>
+
+<style scoped>
+.addbtn:hover{
+  opacity: 0.8 ;
+  cursor: pointer ;
+}
+</style>
