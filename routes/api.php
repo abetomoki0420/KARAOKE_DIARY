@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
+Route::resource('users' , 'UserController');
 Route::resource('karaokes' , 'KaraokeController');
 Route::resource('artists' , 'ArtistController');
 Route::resource('songs' , 'SongController');

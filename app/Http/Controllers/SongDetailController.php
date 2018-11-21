@@ -79,7 +79,13 @@ class SongDetailController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $score = $request->input('score' , 0 );
+        $comment = $request->input('comment', '' );
+        $song_detail = SongDetail::find( $id );
+        $song_detail->score = $score ;
+        $song_detail->comment = $comment ;
+
+        $song_detail->save();
     }
 
     /**
@@ -90,6 +96,8 @@ class SongDetailController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $song_detail = SongDetail::find( $id ) ;
+
+        $song_detail->delete();
     }
 }

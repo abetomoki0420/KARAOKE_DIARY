@@ -18,6 +18,9 @@ import router from './router' ;
 
 Vue.use(VueRouter);
 
+import firebase from './auth' ;
+window.firebase = firebase  ;
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -37,14 +40,13 @@ Vue.component('ContentMenu', require('./components/ContentMenu.vue'));
 // })
 
 /* Add Fontawesome Components */
-
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCoffee } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-library.add(faCoffee)
-
-Vue.component('font-awesome-icon', FontAwesomeIcon)
+// import { library } from '@fortawesome/fontawesome-svg-core'
+// import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+// import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+//
+// library.add(faCoffee)
+//
+// Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 
 /**

@@ -56,7 +56,7 @@ class SongController extends Controller
     public function show($id)
     {
       $song = Song::find( $id );
-      return SongDetailResource::collection( $song->Details );
+      return SongDetailResource::collection( $song->Details->sortByDesc('created_at') );
     }
 
     /**
@@ -90,6 +90,8 @@ class SongController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $song = Song::find( $id ) ;
+
+        $song->delete() ;
     }
 }

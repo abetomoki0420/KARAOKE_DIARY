@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\User ;
+use App\Http\Resources\User as UserResource ;
 use App\Http\Resources\Artist as ArtistResource ;
-use App\Http\Resources\Song as SongResource ;
-
-use App\Artist ;
-
 use Illuminate\Http\Request;
 
-class ArtistController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +16,7 @@ class ArtistController extends Controller
      */
     public function index()
     {
-        return ArtistResource::collection(Artist::all());
+        //
     }
 
     /**
@@ -28,7 +26,7 @@ class ArtistController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -39,23 +37,33 @@ class ArtistController extends Controller
      */
     public function store(Request $request)
     {
-        $artist = new Artist() ;
-        $artist->user_id = 1 ; //Dummy
-        $artist->name = $request->input('name' , '');
+        $uid = $request->input('uid', '' );
+        $name = $request->input('displayName' , '');
+        $user = User::where('uid','=' , $uid )->first();
 
-        $artist->save();
+        if( is_null($user) ){
+          //Have not Registered yet , then Register User
+          $user = new User ;
+          $user->uid = $uid ;
+          $user->name = $name ;
+
+          $user->save() ;
+        }
+
+        return new UserResource( $user );
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  string  $uid
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($uid)
     {
-      $artist = Artist::find( $id );
-      return SongResource::collection( $artist->songs );
+        $user = User::where('uid' , '=' , $uid )->first();
+
+        return ArtistResource::collection( $user->artists );
     }
 
     /**
@@ -89,8 +97,6 @@ class ArtistController extends Controller
      */
     public function destroy($id)
     {
-        $artist = Artist::find( $id );
-
-        $artist->delete();
+        //
     }
 }

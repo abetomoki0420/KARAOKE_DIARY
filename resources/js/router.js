@@ -1,9 +1,13 @@
 import VueRouter from 'vue-router' ;
 
 //Routing
-export default new VueRouter({
+const router = new VueRouter({
   mode: 'history',
   routes:[
+    {
+      path:'*' ,
+      redirect: '/'
+    },
     {
       path: '/' ,
       component: require('./components/ContentMain.vue') ,
@@ -12,32 +16,57 @@ export default new VueRouter({
     {
       path: '/register-song' ,
       component: require('./components/RegisterSong.vue') ,
-      name: 'register-song'
+      name: 'register-song' ,
+      meta: { requiresAuth: true }
     },
     {
       path: '/register-artist' ,
       component: require('./components/RegisterArtist.vue') ,
-      name: 'register-artist'
+      name: 'register-artist',
+      meta: { requiresAuth: true }
     },
     {
       path: '/artists' ,
       component: require('./components/ShowArtists.vue') ,
-      name: 'artists'
+      name: 'artists' ,
+      meta: { requiresAuth: true }
     },
     {
-      path: '/artists/songs/:name' ,
+      path: '/artists/songs/:id/:name' ,
       component: require('./components/ShowSongs.vue') ,
-      name: 'songs'
+      name: 'songs' ,
+      meta: { requiresAuth: true }
     },
     {
-      path: '/artists/songs/:artist_name/:song_name' ,
+      path: '/artists/songs/:artist_id/:artist_name/:id/:song_name' ,
       component: require('./components/ShowSongDetails.vue') ,
-      name: 'song_detail'
+      name: 'song_detail',
+      meta: { requiresAuth: true }
     },
     {
       path: '/artists/songs/:artist_name/:song_name/create' ,
       component: require('./components/CreateSongDetails.vue') ,
-      name: 'create_songdetail'
+      name: 'create_songdetail' ,
+      meta: { requiresAuth: true }
     },
   ]
 })
+
+router.beforeEach( ( to , from , next ) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth )
+  if( requiresAuth ){
+    firebase.auth().onAuthStateChanged( (user) => {
+      if(user){
+        next()
+      }else{
+        next({
+          path: '/' ,
+        })
+      }
+    })
+  }else{
+    next()
+  }
+})
+
+export default router

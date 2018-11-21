@@ -1,8 +1,4 @@
 <template>
-  <span>
-    <span @click="openModal" class="icon is-medium has-text-primary addbtn">
-      <i class="fas fa-plus-circle"></i>
-    </span>
     <ModalBase @close="closeModal" v-if="modal">
       <div class="field">
         <label class="label has-text-grey">点数</label>
@@ -19,10 +15,10 @@
         </div>
       </div>
       <template slot="submit">
-        <button class="button is-primary" @click.prevent="registerSongDetail">登録</button>
+        <button class="button is-danger is-pulled-left" @click.prevent="deleteSongDetail">削除</button>
+        <button class="button is-primary" @click.prevent="editSongDetail">変更</button>
       </template>
     </ModalBase>
-  </span>
 </template>
 
 <script>
@@ -32,31 +28,36 @@ export default {
   components: { ModalBase },
   data() {
     return {
-      modal: false,
+      modal: true,
       score : '' ,
       comment: '' ,
       isScoreError: false
     }
   },
+  created(){
+    this.score = this.oldScore
+    this.comment = this.oldComment
+  },
   props: {
-    songId: {
+    songDetailId: {
       type: Number ,
       required: true ,
+    },
+    oldScore:{
+      type: Number ,
+      require: true ,
+    },
+    oldComment: {
+      type: String ,
     }
   },
   methods: {
-    openModal() {
-      this.modal = true
-      Vue.nextTick( () => {
-        document.getElementById('input').focus()
-      })
-    },
     closeModal() {
       this.score = ''
       this.comment = ''
       this.modal = false
     },
-    registerSongDetail: function(){
+    editSongDetail: function(){
       const regex = new RegExp(/^[-+]?[0-9]+(\.[0-9]+)?$/);
       if( regex.test( this.score) ){
         this.isScoreError = false
@@ -65,18 +66,30 @@ export default {
         return
       }
 
-      axios.post('/api/song_details' , {
-        id: this.songId ,
+      axios.put('/api/song_details/' + this.songDetailId , {
         score: this.score ,
         comment: this.comment ,
       })
       .then( (res) => {
         this.score = ""
         this.comment = ""
+        this.isScoreError = false
         this.closeModal()
-        this.$emit('registered')
+        this.$emit('edited')
       })
+    },
+    deleteSongDetail: function(){
+      if( !confirm( 'このデータを削除しますか？' ) ){
+        return
+      }
+
+      axios.delete('/api/song_details/' + this.songDetailId )
+      .then( (res) => {
+        this.closeModal()
+        this.$emit('deleted')
+      });
     }
+
   }
 }
 </script>

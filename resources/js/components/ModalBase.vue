@@ -1,7 +1,7 @@
 <template>
   <transition name="modal" appear>
     <div class="modal modal-overlay" @click.self="$emit('close')">
-      <div class="modal-window">
+      <div class="modal-window ">
         <div class="modal-content">
           <slot/>
         </div>
@@ -38,6 +38,7 @@
 
   &-content {
     padding: 10px 20px;
+    margin: 0 ;
   }
 
   &-footer {

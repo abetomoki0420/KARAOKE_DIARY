@@ -1,13 +1,14 @@
 <template>
   <span>
-    <span @click="openModal" class="icon is-medium has-text-success addbtn">
+    <span @click="openModal" class="icon is-medium has-text-primary addbtn">
       <i class="fas fa-plus-circle"></i>
     </span>
     <ModalBase @close="closeModal" v-if="modal">
-      <div class="field">
-        <label class="label">アーティスト名</label>
+      <div class="field" >
+        <label class="label has-text-grey">アーティスト名</label>
         <div class="control">
-          <input id="input" v-model="name" class="input" type="text" placeholder="例 Mr.Children" autofocus>
+          <input id="input" v-model="name" class="input is-primary" type="text" maxlength="30"
+           placeholder="例 Mr.Children" autofocus>
         </div>
       </div>
       <template slot="submit">
