@@ -6776,7 +6776,7 @@ window.firebase = __WEBPACK_IMPORTED_MODULE_2__auth__["a" /* default */];
  */
 
 Vue.component('MyHeader', __webpack_require__(111));
-Vue.component('ContentMenu', __webpack_require__(119));
+// Vue.component('ContentMenu', require('./components/ContentMenu.vue'));
 // Vue.component('example-component', require('./components/ExampleComponent.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
@@ -19057,6 +19057,8 @@ module.exports = function listToStyles (parentId, list) {
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RegisterArtistModal_vue__ = __webpack_require__(48);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RegisterArtistModal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__RegisterArtistModal_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__LoadingDisplayModal_vue__ = __webpack_require__(135);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__LoadingDisplayModal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__LoadingDisplayModal_vue__);
 //
 //
 //
@@ -19087,6 +19089,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -19096,11 +19109,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     return {
       artists: [],
       user: null,
-      isLogin: false
+      isLogin: false,
+      isLoading: false
     };
   },
   components: {
-    RegisterArtistModal: __WEBPACK_IMPORTED_MODULE_0__RegisterArtistModal_vue___default.a
+    RegisterArtistModal: __WEBPACK_IMPORTED_MODULE_0__RegisterArtistModal_vue___default.a,
+    LoadingDisplayModal: __WEBPACK_IMPORTED_MODULE_1__LoadingDisplayModal_vue___default.a
   },
   computed: {
     artists_count: function artists_count() {
@@ -19130,8 +19145,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     getArtists: function getArtists() {
       var _this2 = this;
 
+      this.isLoading = true;
       axios.get('/api/users/' + this.user.uid).then(function (res) {
         _this2.artists = res.data.data;
+        _this2.isLoading = false;
       });
     },
     reload: function reload() {
@@ -19279,7 +19296,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     return {
       user: null,
       modal: false,
-      name: ''
+      name: '',
+      isRegistering: false
     };
   },
   created: function created() {
@@ -19304,12 +19322,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     registerArtist: function registerArtist() {
       var _this2 = this;
 
+      if (this.isRegistering) {
+        return;
+      }
+      this.isRegistering = true;
+
       axios.post('/api/artists', {
         uid: this.user.uid,
         name: this.name
       }).then(function (res) {
         _this2.name = "";
         _this2.closeModal();
+        _this2.isRegistering = false;
         _this2.$emit('registered');
       });
     }
@@ -19476,7 +19500,10 @@ var render = function() {
                 _c(
                   "button",
                   {
-                    staticClass: "button is-primary",
+                    class: {
+                      "button is-primary is-loading": _vm.isRegistering,
+                      "button is-primary": !_vm.isRegistering
+                    },
                     on: {
                       click: function($event) {
                         $event.preventDefault()
@@ -19513,71 +19540,101 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "column" }, [
-    _vm.isLogin
-      ? _c(
-          "div",
-          { staticClass: "title" },
-          [
-            _c("span", { staticClass: "title has-text-grey" }, [
-              _vm._v("アーティスト一覧")
-            ]),
-            _vm._v(" "),
-            _c("register-artist-modal", { on: { registered: _vm.reload } })
-          ],
-          1
-        )
-      : _vm._e(),
-    _vm._v(" "),
-    !_vm.isLogin
-      ? _c("div", [_c("span", [_vm._v("ログインして下さい")])])
-      : _vm._e(),
-    _vm._v(" "),
-    _vm.artists_count == 0 && _vm.isLogin
-      ? _c("div", [_c("p", [_vm._v("アーティストが登録出来ます")])])
-      : _vm._e(),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "tile is-ancestor" },
-      _vm._l(_vm.artists, function(artist) {
-        return _c(
-          "div",
-          { staticClass: "tile is-parent is-4 artist" },
-          [
-            _c("button", {
-              staticClass: "delete dltbtn",
-              on: {
-                click: function($event) {
-                  _vm.deleteArtist(artist)
-                }
-              }
-            }),
-            _vm._v(" "),
-            _c(
-              "router-link",
-              {
-                staticClass: "tile is-child notification is-primary box",
-                attrs: {
-                  to: {
-                    name: "songs",
-                    params: {
-                      id: artist.id,
-                      name: artist.name
-                    }
+  return _c(
+    "div",
+    { staticClass: "column" },
+    [
+      _vm._m(0),
+      _vm._v(" "),
+      _vm.isLogin
+        ? _c(
+            "div",
+            { staticClass: "title" },
+            [
+              _c("span", { staticClass: "title has-text-grey" }, [
+                _vm._v("アーティスト一覧")
+              ]),
+              _vm._v(" "),
+              _c("register-artist-modal", { on: { registered: _vm.reload } })
+            ],
+            1
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      !_vm.isLogin
+        ? _c("div", [_c("span", [_vm._v("ログインして下さい")])])
+        : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "tile is-ancestor" },
+        _vm._l(_vm.artists, function(artist) {
+          return _c(
+            "div",
+            { staticClass: "tile is-parent is-4 artist" },
+            [
+              _c("button", {
+                staticClass: "delete dltbtn",
+                on: {
+                  click: function($event) {
+                    _vm.deleteArtist(artist)
                   }
                 }
-              },
-              [_c("p", { staticClass: "title" }, [_vm._v(_vm._s(artist.name))])]
-            )
-          ],
-          1
-        )
-      })
-    )
-  ])
+              }),
+              _vm._v(" "),
+              _c(
+                "router-link",
+                {
+                  staticClass: "tile is-child notification is-primary box",
+                  attrs: {
+                    to: {
+                      name: "songs",
+                      params: {
+                        id: artist.id,
+                        name: artist.name
+                      }
+                    }
+                  }
+                },
+                [
+                  _c("p", { staticClass: "title" }, [
+                    _vm._v(_vm._s(artist.name))
+                  ])
+                ]
+              )
+            ],
+            1
+          )
+        })
+      ),
+      _vm._v(" "),
+      _vm.isLoading ? _c("loading-display-modal") : _vm._e()
+    ],
+    1
+  )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "tile is-ancestor" }, [
+      _c("div", { staticClass: "tile is-parent is-4 artist" }, [
+        _c(
+          "div",
+          { staticClass: "tile is-child notification is-primary box" },
+          [_c("p", { staticClass: "title" }, [_vm._v("アーティスト一覧")])]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "tile is-child notification is-primary box" },
+          [_c("p", { staticClass: "title" }, [_vm._v("ジャンル一覧")])]
+        )
+      ])
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -20334,6 +20391,8 @@ exports.push([module.i, "\n.song{\r\n  position: relative;\n}\r\n", ""]);
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RegisterSongModal_vue__ = __webpack_require__(74);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RegisterSongModal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__RegisterSongModal_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__LoadingDisplayModal_vue__ = __webpack_require__(135);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__LoadingDisplayModal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__LoadingDisplayModal_vue__);
 //
 //
 //
@@ -20369,19 +20428,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
+
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       songs: [],
-      loading: true
+      isLoading: false
     };
   },
   components: {
-    RegisterSongModal: __WEBPACK_IMPORTED_MODULE_0__RegisterSongModal_vue___default.a
+    RegisterSongModal: __WEBPACK_IMPORTED_MODULE_0__RegisterSongModal_vue___default.a,
+    LoadingDisplayModal: __WEBPACK_IMPORTED_MODULE_1__LoadingDisplayModal_vue___default.a
   },
   created: function created() {
     this.getSongs();
@@ -20396,9 +20456,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     getSongs: function getSongs() {
       var _this = this;
 
+      this.isLoading = true;
       axios.get('/api/artists/' + this.$route.params.id).then(function (res) {
         _this.songs = res.data.data;
-        _this.loading = false;
+        _this.isLoading = false;
       });
     },
     reload: function reload() {
@@ -20517,6 +20578,8 @@ exports.push([module.i, "\n.addbtn[data-v-b896444c]:hover{\r\n  opacity: 0.8 ;\r
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__ModalBase_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__RegisterModalPlusButton_vue__ = __webpack_require__(132);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__RegisterModalPlusButton_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__RegisterModalPlusButton_vue__);
 //
 //
 //
@@ -20535,17 +20598,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
+
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  components: { ModalBase: __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue___default.a },
+  components: { ModalBase: __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue___default.a, RegisterModalPlusButton: __WEBPACK_IMPORTED_MODULE_1__RegisterModalPlusButton_vue___default.a },
   data: function data() {
     return {
       modal: false,
-      title: ''
+      title: '',
+      isRegistering: false
     };
   },
 
@@ -20569,12 +20632,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     registerSong: function registerSong() {
       var _this = this;
 
+      if (this.isRegistering) {
+        return;
+      }
+      this.isRegistering = true;
+
       axios.post('/api/songs', {
         artist_id: this.artistId,
         title: this.title
       }).then(function (res) {
         _this.title = "";
         _this.closeModal();
+        _this.isRegistering = false;
         _this.$emit('registered');
       });
     }
@@ -20592,14 +20661,7 @@ var render = function() {
   return _c(
     "span",
     [
-      _c(
-        "span",
-        {
-          staticClass: "icon is-medium has-text-primary addbtn",
-          on: { click: _vm.openModal }
-        },
-        [_c("i", { staticClass: "fas fa-plus-circle" })]
-      ),
+      _c("register-modal-plus-button", { on: { openModal: _vm.openModal } }),
       _vm._v(" "),
       _vm.modal
         ? _c(
@@ -20646,7 +20708,10 @@ var render = function() {
                 _c(
                   "button",
                   {
-                    staticClass: "button is-primary",
+                    class: {
+                      "button is-primary is-loading": _vm.isRegistering,
+                      "button is-primary": !_vm.isRegistering
+                    },
                     on: {
                       click: function($event) {
                         $event.preventDefault()
@@ -20683,92 +20748,93 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "column" }, [
-    _c(
-      "div",
-      { staticClass: "title" },
-      [
-        _c(
-          "router-link",
-          {
-            attrs: {
-              to: {
-                name: "main"
+  return _c(
+    "div",
+    { staticClass: "column" },
+    [
+      _c(
+        "div",
+        { staticClass: "title" },
+        [
+          _c(
+            "router-link",
+            {
+              attrs: {
+                to: {
+                  name: "main"
+                }
               }
-            }
-          },
-          [
-            _c("span", { staticClass: "icon is-medium has-text-primary" }, [
-              _c("i", { staticClass: "fas fa-arrow-circle-left" })
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c("span", { staticClass: "has-text-grey" }, [
-          _vm._v(_vm._s(_vm.$route.params.name))
-        ]),
-        _vm._v(" "),
-        _c("register-song-modal", {
-          attrs: { "artist-id": +_vm.$route.params.id },
-          on: { registered: _vm.reload }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _vm.songs_count == 0
-      ? _c("div", [_c("p", [_vm._v("曲が登録出来ます")])])
-      : _vm._e(),
-    _vm._v(" "),
-    !_vm.loading
-      ? _c(
-          "div",
-          { staticClass: "tile is-ancestor" },
-          _vm._l(_vm.songs, function(song) {
-            return _c(
-              "div",
-              { staticClass: "tile is-parent is-4 song" },
-              [
-                _c("button", {
-                  staticClass: "delete dltbtn",
-                  on: {
-                    click: function($event) {
-                      _vm.deleteSong(song)
-                    }
-                  }
-                }),
-                _vm._v(" "),
-                _c(
-                  "router-link",
-                  {
-                    staticClass: "tile is-child notification is-primary box",
-                    attrs: {
-                      to: {
-                        name: "song_detail",
-                        params: {
-                          id: song.id,
-                          artist_id: _vm.$route.params.id,
-                          song_name: song.name,
-                          artist_name: _vm.$route.params.name
-                        }
+            },
+            [
+              _c("span", { staticClass: "icon is-medium has-text-primary" }, [
+                _c("i", { staticClass: "fas fa-arrow-circle-left" })
+              ])
+            ]
+          ),
+          _vm._v(" "),
+          _c("span", { staticClass: "has-text-grey" }, [
+            _vm._v(_vm._s(_vm.$route.params.name))
+          ]),
+          _vm._v(" "),
+          _c("register-song-modal", {
+            attrs: { "artist-id": +_vm.$route.params.id },
+            on: { registered: _vm.reload }
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      !_vm.isLoading
+        ? _c(
+            "div",
+            { staticClass: "tile is-ancestor" },
+            _vm._l(_vm.songs, function(song) {
+              return _c(
+                "div",
+                { staticClass: "tile is-parent is-4 song" },
+                [
+                  _c("button", {
+                    staticClass: "delete dltbtn",
+                    on: {
+                      click: function($event) {
+                        _vm.deleteSong(song)
                       }
                     }
-                  },
-                  [
-                    _c("p", { staticClass: "title" }, [
-                      _vm._v(_vm._s(song.name))
-                    ])
-                  ]
-                )
-              ],
-              1
-            )
-          })
-        )
-      : _vm._e(),
-    _vm._v(" "),
-    _vm.loading ? _c("div", [_vm._v("\n    Now Loading...\n  ")]) : _vm._e()
-  ])
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "tile is-child notification is-primary box",
+                      attrs: {
+                        to: {
+                          name: "song_detail",
+                          params: {
+                            id: song.id,
+                            artist_id: _vm.$route.params.id,
+                            song_name: song.name,
+                            artist_name: _vm.$route.params.name
+                          }
+                        }
+                      }
+                    },
+                    [
+                      _c("p", { staticClass: "title" }, [
+                        _vm._v(_vm._s(song.name))
+                      ])
+                    ]
+                  )
+                ],
+                1
+              )
+            })
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.isLoading ? _c("loading-display-modal") : _vm._e()
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -21058,6 +21124,8 @@ exports.push([module.i, "\n.addbtn[data-v-7a404cc9]:hover{\r\n  opacity: 0.8 ;\r
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__ModalBase_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__RegisterModalPlusButton_vue__ = __webpack_require__(132);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__RegisterModalPlusButton_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__RegisterModalPlusButton_vue__);
 //
 //
 //
@@ -21083,13 +21151,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
+
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  components: { ModalBase: __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue___default.a },
+  components: { ModalBase: __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue___default.a, RegisterModalPlusButton: __WEBPACK_IMPORTED_MODULE_1__RegisterModalPlusButton_vue___default.a },
   data: function data() {
     return {
       modal: false,
@@ -21154,14 +21221,7 @@ var render = function() {
   return _c(
     "span",
     [
-      _c(
-        "span",
-        {
-          staticClass: "icon is-medium has-text-primary addbtn",
-          on: { click: _vm.openModal }
-        },
-        [_c("i", { staticClass: "fas fa-plus-circle" })]
-      ),
+      _c("register-modal-plus-button", { on: { openModal: _vm.openModal } }),
       _vm._v(" "),
       _vm.modal
         ? _c(
@@ -21630,7 +21690,7 @@ var render = function() {
       ],
       1
     ),
-    _vm._v(" "),
+    _vm._v("\n    タグ ｶﾜｲｲ　カッコいい　好き\n    "),
     _c(
       "table",
       {
@@ -68019,142 +68079,9 @@ if (false) {
 }
 
 /***/ }),
-/* 119 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(0)
-/* script */
-var __vue_script__ = __webpack_require__(120)
-/* template */
-var __vue_template__ = __webpack_require__(121)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/js/components/ContentMenu.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5714585d", Component.options)
-  } else {
-    hotAPI.reload("data-v-5714585d", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 120 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    name: "ContentMenu"
-});
-
-/***/ }),
-/* 121 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "column is-one-fifth has-background-white-ter" },
-    [
-      _c("aside", { staticClass: "menu" }, [
-        _c("p", { staticClass: "menu-label" }, [
-          _vm._v("\n      メニュー\n    ")
-        ]),
-        _vm._v(" "),
-        _c("ul", { staticClass: "menu-list" }, [
-          _c(
-            "li",
-            [
-              _c("router-link", { attrs: { to: "/register-artist" } }, [
-                _vm._v("アーティスト登録")
-              ])
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "li",
-            [
-              _c("router-link", { attrs: { to: "/register-song" } }, [
-                _vm._v("曲登録")
-              ])
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "li",
-            [
-              _c("router-link", { attrs: { to: "/artists" } }, [
-                _vm._v("アーティスト一覧")
-              ])
-            ],
-            1
-          )
-        ])
-      ])
-    ]
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-5714585d", module.exports)
-  }
-}
-
-/***/ }),
+/* 119 */,
+/* 120 */,
+/* 121 */,
 /* 122 */
 /***/ (function(module, exports) {
 
@@ -68263,6 +68190,129 @@ if (false) {
     require("vue-hot-reload-api")      .rerender("data-v-36714b3b", module.exports)
   }
 }
+
+/***/ }),
+/* 135 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(140)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = null
+/* template */
+var __vue_template__ = __webpack_require__(139)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-2d3028cc"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/LoadingDisplayModal.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2d3028cc", Component.options)
+  } else {
+    hotAPI.reload("data-v-2d3028cc", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 136 */,
+/* 137 */,
+/* 138 */,
+/* 139 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("transition", { attrs: { name: "modal", appear: "" } }, [
+    _c("div", { staticClass: "modal modal-overlay column" }, [
+      _c("div", { staticClass: "modal-window" }, [
+        _c("i", {
+          staticClass: "fas fa-circle-notch fa-spin fa-10x",
+          staticStyle: { color: "white" }
+        })
+      ])
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-2d3028cc", module.exports)
+  }
+}
+
+/***/ }),
+/* 140 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(141);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(3)("70a2ca80", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2d3028cc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../node_modules/sass-loader/lib/loader.js!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./LoadingDisplayModal.vue", function() {
+     var newContent = require("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-2d3028cc\",\"scoped\":true,\"hasInlineConfig\":true}!../../../node_modules/sass-loader/lib/loader.js!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./LoadingDisplayModal.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 141 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(2)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.modal.modal-overlay[data-v-2d3028cc] {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(0, 0, 0, 0.3);\n}\n.modal-window[data-v-2d3028cc] {\n  background: rgba(0, 0, 0, 0);\n  border-radius: 4px;\n  overflow: hidden;\n}\n.modal-content[data-v-2d3028cc] {\n  text-align: center;\n  padding: 10px 20px;\n  margin: 0;\n}\n.modal-footer[data-v-2d3028cc] {\n  background: #ccc;\n  padding: 10px;\n  text-align: right;\n}\n.modal-enter-active[data-v-2d3028cc], .modal-leave-active[data-v-2d3028cc] {\n  -webkit-transition: opacity 0.2s;\n  transition: opacity 0.2s;\n}\n.modal-enter-active .modal-window[data-v-2d3028cc], .modal-leave-active .modal-window[data-v-2d3028cc] {\n    -webkit-transition: opacity 0.2s, -webkit-transform 0.2s;\n    transition: opacity 0.2s, -webkit-transform 0.2s;\n    transition: opacity 0.2s, transform 0.2s;\n    transition: opacity 0.2s, transform 0.2s, -webkit-transform 0.2s;\n}\n.modal-leave-active[data-v-2d3028cc] {\n  -webkit-transition: opacity 0.4s;\n  transition: opacity 0.4s;\n}\n.modal-enter[data-v-2d3028cc], .modal-leave-to[data-v-2d3028cc] {\n  opacity: 0;\n}\n.modal-enter .modal-window[data-v-2d3028cc], .modal-leave-to .modal-window[data-v-2d3028cc] {\n    opacity: 0;\n}\n", ""]);
+
+// exports
+
 
 /***/ })
 /******/ ]);

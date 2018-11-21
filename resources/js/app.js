@@ -28,7 +28,7 @@ window.firebase = firebase  ;
  */
 
 Vue.component('MyHeader', require('./components/MyHeader.vue'));
-Vue.component('ContentMenu', require('./components/ContentMenu.vue'));
+// Vue.component('ContentMenu', require('./components/ContentMenu.vue'));
 // Vue.component('example-component', require('./components/ExampleComponent.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)

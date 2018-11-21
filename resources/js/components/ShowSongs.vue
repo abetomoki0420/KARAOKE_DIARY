@@ -10,10 +10,10 @@
       <span class="has-text-grey">{{ $route.params.name }}</span>
       <register-song-modal :artist-id="+$route.params.id" @registered="reload"></register-song-modal>
     </div>
-    <div v-if="songs_count == 0">
+    <!-- <div v-if="songs_count == 0">
       <p>曲が登録出来ます</p>
-    </div>
-    <div v-if="!loading" class="tile is-ancestor">
+    </div> -->
+    <div v-if="!isLoading" class="tile is-ancestor">
       <div v-for="song in songs" class="tile is-parent is-4 song">
         <button class="delete dltbtn" @click="deleteSong(song)"></button>
         <router-link :to="{
@@ -29,23 +29,24 @@
         </router-link>
       </div>
     </div>
-    <div v-if="loading">
-      Now Loading...
-    </div>
+    <loading-display-modal v-if="isLoading"></loading-display-modal>
   </div>
 </template>
 
 <script>
   import RegisterSongModal from './RegisterSongModal.vue'
+  import LoadingDisplayModal from './LoadingDisplayModal.vue'
+
   export default {
       data: function(){
         return{
           songs: [] ,
-          loading: true ,
+          isLoading : false ,
         }
       },
       components:{
         RegisterSongModal ,
+        LoadingDisplayModal ,
       } ,
       created(){
         this.getSongs();
@@ -57,10 +58,11 @@
       },
       methods : {
         getSongs: function(){
+          this.isLoading = true
           axios.get('/api/artists/'+ this.$route.params.id )
           .then( (res) => {
             this.songs = res.data.data ;
-            this.loading = false ;
+            this.isLoading = false ;
           });
         },
         reload: function(){

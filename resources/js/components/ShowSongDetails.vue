@@ -15,7 +15,7 @@
       <span class="has-text-grey">{{ $route.params.song_name }}</span>
       <register-song-detail-modal :song-id="+$route.params.id" @registered="reload"></register-song-detail-modal>
     </div>
-
+    タグ ｶﾜｲｲ　カッコいい　好き
     <table class="table is-fullwidth is-hoverable is-narrow is-bordered details">
       <thead>
         <tr>

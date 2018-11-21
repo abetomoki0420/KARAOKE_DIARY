@@ -62,7 +62,6 @@ class UserController extends Controller
     public function show($uid)
     {
         $user = User::where('uid' , '=' , $uid )->first();
-
         return ArtistResource::collection( $user->artists );
     }
 

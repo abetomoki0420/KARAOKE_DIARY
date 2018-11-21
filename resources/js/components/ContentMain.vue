@@ -1,14 +1,23 @@
 <template>
+
+
 <div class="column" >
+  <div class="tile is-ancestor">
+    <div class="tile is-parent is-4 artist">
+      <div class="tile is-child notification is-primary box">
+        <p class="title">アーティスト一覧</p>
+      </div>
+      <div class="tile is-child notification is-primary box">
+        <p class="title">ジャンル一覧</p>
+      </div>
+    </div>
+  </div>
   <div class="title" v-if="isLogin">
     <span class="title has-text-grey">アーティスト一覧</span>
     <register-artist-modal @registered="reload"></register-artist-modal>
   </div>
   <div v-if="!isLogin">
     <span>ログインして下さい</span>
-  </div>
-  <div v-if="artists_count == 0 && isLogin">
-    <p>アーティストが登録出来ます</p>
   </div>
   <div class="tile is-ancestor">
     <div v-for="artist in artists" class="tile is-parent is-4 artist">
@@ -24,12 +33,14 @@
       </router-link>
     </div>
   </div>
+  <loading-display-modal v-if="isLoading"></loading-display-modal>
 </div>
 </template>
 
 
 <script>
-  import RegisterArtistModal from './RegisterArtistModal.vue';
+  import RegisterArtistModal from './RegisterArtistModal.vue'
+  import LoadingDisplayModal from './LoadingDisplayModal.vue'
 
   export default {
       name: "ContentMain" ,
@@ -38,10 +49,12 @@
           artists: [] ,
           user : null ,
           isLogin: false ,
+          isLoading: false ,
         }
       },
       components:{
         RegisterArtistModal ,
+        LoadingDisplayModal ,
       } ,
       computed:{
         artists_count: function(){
@@ -66,9 +79,11 @@
       },
       methods : {
         getArtists: function(){
+          this.isLoading = true
           axios.get('/api/users/' + this.user.uid )
           .then( (res) => {
             this.artists = res.data.data ;
+            this.isLoading = false
           });
         },
         reload: function(){

@@ -1,8 +1,6 @@
 <template>
   <span>
-    <span @click="openModal" class="icon is-medium has-text-primary addbtn">
-      <i class="fas fa-plus-circle"></i>
-    </span>
+    <register-modal-plus-button @openModal="openModal"></register-modal-plus-button>
     <ModalBase @close="closeModal" v-if="modal">
       <div class="field">
         <label class="label has-text-grey">曲名</label>
@@ -12,7 +10,7 @@
         </div>
       </div>
       <template slot="submit">
-        <button class="button is-primary" @click.prevent="registerSong">登録</button>
+        <button :class="{'button is-primary is-loading':isRegistering , 'button is-primary': !isRegistering}" @click.prevent="registerSong">登録</button>
       </template>
     </ModalBase>
   </span>
@@ -20,13 +18,15 @@
 
 <script>
 import ModalBase from './ModalBase.vue'
+import RegisterModalPlusButton from './RegisterModalPlusButton.vue'
 
 export default {
-  components: { ModalBase },
+  components: { ModalBase , RegisterModalPlusButton },
   data() {
     return {
       modal: false,
-      title : ''
+      title : '' ,
+      isRegistering : false ,
     }
   },
   props:{
@@ -46,6 +46,11 @@ export default {
       this.modal = false
     },
     registerSong: function(){
+      if(this.isRegistering){
+        return
+      }
+      this.isRegistering = true
+
       axios.post('/api/songs' , {
         artist_id: this.artistId ,
         title: this.title
@@ -53,6 +58,7 @@ export default {
       .then( (res) => {
         this.title = ""
         this.closeModal()
+        this.isRegistering = false
         this.$emit('registered')
       })
     }
