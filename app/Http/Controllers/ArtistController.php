@@ -17,20 +17,20 @@ class ArtistController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        return ArtistResource::collection(Artist::all());
-    }
+    // public function index()
+    // {
+    //     return ArtistResource::collection(Artist::all());
+    // }
 
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        //
-    }
+    // public function create()
+    // {
+    //
+    // }
 
     /**
      * Store a newly created resource in storage.
@@ -42,7 +42,7 @@ class ArtistController extends Controller
     {
         $uid = $request->input('uid' , '');
         $user = User::where('uid' , '=' , $uid )->first();
-        
+
         $artist = new Artist() ;
         $artist->user_id = $user->id ;
         $artist->name = $request->input('name' , '');
@@ -68,10 +68,10 @@ class ArtistController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        //
-    }
+    // public function edit($id)
+    // {
+    //     //
+    // }
 
     /**
      * Update the specified resource in storage.
@@ -80,10 +80,10 @@ class ArtistController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+    // public function update(Request $request, $id)
+    // {
+    //     //
+    // }
 
     /**
      * Remove the specified resource from storage.
