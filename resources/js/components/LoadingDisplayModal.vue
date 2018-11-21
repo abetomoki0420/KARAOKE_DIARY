@@ -1,6 +1,9 @@
 <template>
   <span>
     <ModalBase @close="closeModal" v-if="modal">
+      <template slot="submit">
+        <button class="button is-danger"></button>
+      </template>
     </ModalBase>
   </span>
 </template>

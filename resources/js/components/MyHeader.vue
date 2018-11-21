@@ -6,7 +6,7 @@
         <span class="logo">KARAOKE DIARY</span>
       </router-link>
     </div>
-    <div class="navbar-item">
+    <div class="navbar-item navbar-end">
       <div class="field is-grouped">
         <div class="button is-primary" @click="login" v-if="!isLogin">
           Login
@@ -24,19 +24,16 @@
 </template>
 
 <script>
-  import LoadingDisplayModal from './LoadingDisplayModal.vue'
   export default {
       name: "MyHeader" ,
       data: function(){
         return{
           user: null ,
-          isLoading: false ,
         }
       },
       created(){
         firebase.auth().onAuthStateChanged( user => {
           this.user = user ? user : null
-
           if(this.user){
             this.getUser(this.user.uid , this.user.displayName )
           }
@@ -48,16 +45,15 @@
         }
       },
       methods:{
-        login:  function(){
+        login: function(){
           const provider = new firebase.auth.GoogleAuthProvider()
           // await firebase.auth().signInWithPopup( provider )
-           firebase.auth().signInWithRedirect( provider )
+          firebase.auth().signInWithRedirect( provider )
         },
         logout: async function(){
           await firebase.auth().signOut();
         },
         getUser: function(uid,displayName){
-          this.isLoading = true
           axios.post('/api/users' , {
             uid: uid ,
             displayName: displayName ,

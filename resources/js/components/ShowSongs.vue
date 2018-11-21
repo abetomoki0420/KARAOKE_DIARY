@@ -10,6 +10,9 @@
       <span class="has-text-grey">{{ $route.params.name }}</span>
       <register-song-modal :artist-id="+$route.params.id" @registered="reload"></register-song-modal>
     </div>
+    <div v-if="songs_count == 0">
+      <p>曲が登録出来ます</p>
+    </div>
     <div v-if="!loading" class="tile is-ancestor">
       <div v-for="song in songs" class="tile is-parent is-4 song">
         <button class="delete dltbtn" @click="deleteSong(song)"></button>
@@ -37,7 +40,7 @@
   export default {
       data: function(){
         return{
-          songs: null ,
+          songs: [] ,
           loading: true ,
         }
       },
@@ -46,6 +49,11 @@
       } ,
       created(){
         this.getSongs();
+      },
+      computed:{
+        songs_count: function() {
+            return this.songs.length
+        }
       },
       methods : {
         getSongs: function(){

@@ -7,6 +7,9 @@
   <div v-if="!isLogin">
     <span>ログインして下さい</span>
   </div>
+  <div v-if="artists_count == 0 && isLogin">
+    <p>アーティストが登録出来ます</p>
+  </div>
   <div class="tile is-ancestor">
     <div v-for="artist in artists" class="tile is-parent is-4 artist">
       <button class="delete dltbtn" v-on:click="deleteArtist(artist)"></button>
@@ -32,7 +35,7 @@
       name: "ContentMain" ,
       data: function(){
         return{
-          artists: null ,
+          artists: [] ,
           user : null ,
           isLogin: false ,
         }
@@ -40,6 +43,15 @@
       components:{
         RegisterArtistModal ,
       } ,
+      computed:{
+        artists_count: function(){
+          if(this.artists){
+            return this.artists.length ;
+          }else{
+            return 0 ;
+          }
+        }
+      },
       created(){
         firebase.auth().onAuthStateChanged( user => {
           this.user = user ? user : null ;
