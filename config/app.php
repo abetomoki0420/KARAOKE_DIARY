@@ -2,6 +2,9 @@
 
 return [
 
+    //For Heroku Setting
+    'log' => 'errorlog' ,
+
     /*
     |--------------------------------------------------------------------------
     | Application Name
