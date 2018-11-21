@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\Artist as ArtistResource ;
 use App\Http\Resources\Song as SongResource ;
 
+use App\User ;
 use App\Artist ;
 
 use Illuminate\Http\Request;
@@ -39,11 +40,14 @@ class ArtistController extends Controller
      */
     public function store(Request $request)
     {
+        $uid = $request->input('uid' , '');
+        $user = User::where('uid' , '=' , $uid )->first();
+        
         $artist = new Artist() ;
-        $artist->user_id = 1 ; //Dummy
+        $artist->user_id = $user->id ;
         $artist->name = $request->input('name' , '');
-
         $artist->save();
+
     }
 
     /**

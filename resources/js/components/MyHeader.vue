@@ -24,11 +24,13 @@
 </template>
 
 <script>
+  import LoadingDisplayModal from './LoadingDisplayModal.vue'
   export default {
       name: "MyHeader" ,
       data: function(){
         return{
           user: null ,
+          isLoading: false ,
         }
       },
       created(){
@@ -46,21 +48,22 @@
         }
       },
       methods:{
-        login: async function(){
+        login:  function(){
           const provider = new firebase.auth.GoogleAuthProvider()
-          await firebase.auth().signInWithPopup( provider )
+          // await firebase.auth().signInWithPopup( provider )
+           firebase.auth().signInWithRedirect( provider )
         },
         logout: async function(){
           await firebase.auth().signOut();
         },
         getUser: function(uid,displayName){
-            axios.post('/api/users' , {
-              uid: uid ,
-              displayName: displayName ,
-            })
-            .then( (res) => {
-              // console.log(res)
-            })
+          this.isLoading = true
+          axios.post('/api/users' , {
+            uid: uid ,
+            displayName: displayName ,
+          })
+          .then( (res) => {
+          })
         }
       }
   }

@@ -9,9 +9,7 @@
 
 window.Vue = require('vue');
 window.axios = require('axios');
-
 Vue.prototype.$http = window.axios ;
-
 
 import VueRouter from 'vue-router' ;
 import router from './router' ;

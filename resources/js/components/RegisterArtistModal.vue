@@ -25,9 +25,15 @@ export default {
   components: { ModalBase },
   data() {
     return {
+      user: null ,
       modal: false,
       name: '' ,
     }
+  },
+  created(){
+    firebase.auth().onAuthStateChanged( user => {
+      this.user = user ? user : null
+    })
   },
   methods: {
     openModal() {
@@ -41,6 +47,7 @@ export default {
     },
     registerArtist: function(){
       axios.post('/api/artists' , {
+        uid: this.user.uid ,
         name: this.name ,
       })
       .then( (res) => {
