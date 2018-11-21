@@ -1,8 +1,6 @@
 <template>
   <span>
-    <span @click="openModal" class="icon is-medium has-text-primary addbtn">
-      <i class="fas fa-plus-circle"></i>
-    </span>
+    <register-modal-plus-button @openModal="openModal"></register-modal-plus-button>
     <ModalBase @close="closeModal" v-if="modal">
       <div class="field" >
         <label class="label has-text-grey">アーティスト名</label>
@@ -20,9 +18,10 @@
 
 <script>
 import ModalBase from './ModalBase.vue'
+import RegisterModalPlusButton from './RegisterModalPlusButton.vue'
 
 export default {
-  components: { ModalBase },
+  components: { ModalBase , RegisterModalPlusButton },
   data() {
     return {
       user: null ,
