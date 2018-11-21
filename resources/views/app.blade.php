@@ -6,6 +6,17 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>KARAOKE DIARY</title>
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+  <link rel="manifest" href="{{ asset('manifest.json') }}">
+  <script>
+    ( () => {
+      if('serviceWorker' in navigator ){
+        navigator.serviceWorker.register("{{ asset('service-worker.js') }}")
+        .then( () =>{
+          console.log("Service Worker Registered")
+        })
+      }
+    })();
+  </script>
 </head>
 <body>
 
