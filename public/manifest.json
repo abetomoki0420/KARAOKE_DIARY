@@ -19,5 +19,6 @@
       "type": "image/png"
     }
   ],
+  "start_url":"./",
   "display": "standalone"
 }
