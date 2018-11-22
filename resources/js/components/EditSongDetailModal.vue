@@ -15,8 +15,8 @@
         </div>
       </div>
       <template slot="submit">
-        <button class="button is-danger is-pulled-left" @click.prevent="deleteSongDetail">削除</button>
-        <button class="button is-primary" @click.prevent="editSongDetail">変更</button>
+        <button :class="{'button is-danger is-pulled-left is-loading': isLoading , 'button is-danger is-pulled-left': !isLoading }" @click.prevent="deleteSongDetail">削除</button>
+        <button :class="{'button is-primary is-loading': isLoading , 'button is-primary': !isLoading}" @click.prevent="editSongDetail">変更</button>
       </template>
     </ModalBase>
 </template>
@@ -31,7 +31,8 @@ export default {
       modal: true,
       score : '' ,
       comment: '' ,
-      isScoreError: false
+      isScoreError: false ,
+      isLoading: false ,
     }
   },
   created(){
@@ -52,9 +53,10 @@ export default {
     }
   },
   methods: {
-    closeModal() {
+    closeModal: function() {
       this.score = ''
       this.comment = ''
+      this.$emit('close')
       this.modal = false
     },
     editSongDetail: function(){
@@ -66,6 +68,10 @@ export default {
         return
       }
 
+      if(this.isLoading){
+        return
+      }
+      this.isLoading = true
       axios.put('/api/song_details/' + this.songDetailId , {
         score: this.score ,
         comment: this.comment ,
@@ -74,6 +80,7 @@ export default {
         this.score = ""
         this.comment = ""
         this.isScoreError = false
+        this.isLoading = false
         this.closeModal()
         this.$emit('edited')
       })
@@ -83,8 +90,13 @@ export default {
         return
       }
 
+      if(this.isLoading){
+        return
+      }
+      this.isLoading = true
       axios.delete('/api/song_details/' + this.songDetailId )
       .then( (res) => {
+        this.isLoading = false
         this.closeModal()
         this.$emit('deleted')
       });

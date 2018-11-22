@@ -17,7 +17,7 @@
         </div>
       </div>
       <template slot="submit">
-        <button class="button is-primary" @click.prevent="registerSongDetail">登録</button>
+        <button :class="{'button is-primary is-loading': isRegistering , 'button is-primary': !isRegistering}" @click.prevent="registerSongDetail">登録</button>
       </template>
     </ModalBase>
   </span>
@@ -34,7 +34,8 @@ export default {
       modal: false,
       score : '' ,
       comment: '' ,
-      isScoreError: false
+      isScoreError: false ,
+      isRegistering: false ,
     }
   },
   props: {
@@ -64,6 +65,11 @@ export default {
         return
       }
 
+      if(this.isRegistering){
+        return
+      }
+
+      this.isRegistering = true
       axios.post('/api/song_details' , {
         id: this.songId ,
         score: this.score ,
@@ -73,6 +79,7 @@ export default {
         this.score = ""
         this.comment = ""
         this.closeModal()
+        this.isRegistering = false
         this.$emit('registered')
       })
     }

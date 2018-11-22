@@ -1,30 +1,10 @@
 <template>
 <div class="column" >
   <div class="title" v-if="isLogin">
-    <router-link :to="{
-       name: 'main'}">
-      <span class="icon is-medium has-text-primary">
-        <i class="fas fa-arrow-circle-left"></i>
-      </span>
-    </router-link>
-    <span class="title has-text-grey">アーティスト一覧</span>
-    <register-artist-modal @registered="reload"></register-artist-modal>
-  </div>
-  <div v-if="!isLogin">
-    <span>ログインして下さい</span>
+    <span class="title has-text-grey">ジャンル一覧</span>
   </div>
   <div class="tile is-ancestor">
     <div v-for="artist in artists" class="tile is-parent is-4 artist">
-      <button class="delete dltbtn" v-on:click="deleteArtist(artist)"></button>
-      <router-link :to="{
-        name: 'songs',
-        params: {
-          id: artist.id ,
-          name: artist.name ,
-          }
-      }" class="tile is-child notification is-primary box">
-        <p class="title">{{ artist.name }}</p>
-      </router-link>
     </div>
   </div>
   <loading-display-modal v-if="isLoading"></loading-display-modal>
@@ -32,7 +12,6 @@
 </template>
 
 <script>
-  import RegisterArtistModal from './RegisterArtistModal.vue'
   import LoadingDisplayModal from './LoadingDisplayModal.vue'
 
   export default {

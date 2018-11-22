@@ -1,6 +1,6 @@
 <template>
   <span @click="openModal" class="icon is-large has-text-primary addbtn">
-    <i class="fas fa-plus-circle fa-lg"></i>
+    <i class="fas fa-plus-circle fa-md"></i>
   </span>
 </template>
 

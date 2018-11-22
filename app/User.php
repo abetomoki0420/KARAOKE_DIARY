@@ -13,6 +13,9 @@ class User extends Model
     }
 
     function Songs(){
-      return $this->hasMany('App\Song');
+      return $this->hasManyThrough(
+        'App\Song' ,
+        'App\Artist'
+      );
     }
 }

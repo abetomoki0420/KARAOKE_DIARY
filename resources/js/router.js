@@ -49,6 +49,12 @@ const router = new VueRouter({
       name: 'create_songdetail' ,
       meta: { requiresAuth: true }
     },
+    {
+      path: '/categories' ,
+      component: require('./components/ShowAllCategories.vue') ,
+      name: 'categories' ,
+      meta: { requiresAuth: true }
+    },
   ]
 })
 

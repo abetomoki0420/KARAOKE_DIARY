@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Collection ;
 use App\User ;
 use App\Http\Resources\User as UserResource ;
 use App\Http\Resources\Artist as ArtistResource ;
+use App\Http\Resources\Category as CategoryResource ;
 use Illuminate\Http\Request;
+
 
 class UserController extends Controller
 {
@@ -63,6 +66,38 @@ class UserController extends Controller
     {
         $user = User::where('uid' , '=' , $uid )->first();
         return ArtistResource::collection( $user->artists );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  string  $uid
+     * @return \Illuminate\Http\Response
+     */
+    public function showCategories($uid){
+      $user = User::where('uid' , '=' , $uid )->first();
+      $collection = collect([]);
+
+      foreach( $user->songs as $song ){
+          $collection = $collection->merge( $song->categories ) ;
+      }
+      // dd($collection);
+      return CategoryResource::collection( $collection );
+      // dd( $user->songs()->with('categories')->get()->toArray() );
+      // $res = $user->songs()->with(['categories'=> function($query){
+      //   return $query->select('name');
+      // }])->get();
+      // dd($res);
+      // foreach( $user->songs()->with('categories')->get()->toArray() as $array ){
+      //   // dd($array["categories"]);
+      //   dd( $array );
+      // }
+      // foreach( $user->songs as $song ){
+      //   foreach( $song->categories as $category ){
+      //
+      //   }
+      // }
+
     }
 
     /**

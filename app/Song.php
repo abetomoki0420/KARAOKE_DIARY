@@ -12,6 +12,10 @@ class Song extends Model
       return $this->hasMany('App\SongDetail');
     }
 
+    function Categories(){
+      return $this->hasMany('App\Category');
+    }
+
     function Artist(){
       return $this->belongsTo('App\Artist');
     }
