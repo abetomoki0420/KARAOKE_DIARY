@@ -19,7 +19,7 @@
   <div class="content">
     <div class="field is-grouped is-grouped-multiline">
       <div class="control">
-        <span class="tag is-primary" @click="categoryEdit">タグ編集</span>
+        <span class="tag is-primary editbtn" @click="categoryEdit">タグ編集</span>
       </div>
       <div class="control" v-for="category in categories">
         <div class="tags has-addons are-small">
@@ -172,5 +172,9 @@ export default {
 <style scoped>
 tbody tr {
   cursor: pointer;
+}
+
+.editbtn{
+  cursor:pointer ;
 }
 </style>

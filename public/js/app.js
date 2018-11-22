@@ -19179,6 +19179,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -19198,6 +19201,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         _this.isLogin = true;
       } else {
         _this.isLogin = false;
+        _this.$router.replace('/login');
       }
     });
   },
@@ -19214,47 +19218,59 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "column" }, [
-    _c("div", { staticClass: "tile is-ancestor" }, [
-      _c(
-        "div",
-        { staticClass: "tile is-parent is-6" },
-        [
+    !_vm.isLogin
+      ? _c("div", { staticClass: "notification" }, [
+          _c("p", [_vm._v("ログインして下さい")])
+        ])
+      : _vm._e(),
+    _vm._v(" "),
+    _vm.isLogin
+      ? _c("div", { staticClass: "tile is-ancestor" }, [
           _c(
-            "router-link",
-            {
-              staticClass: "tile is-child notification is-primary box",
-              attrs: {
-                to: {
-                  name: "artists"
-                }
-              }
-            },
-            [_c("p", { staticClass: "title" }, [_vm._v("アーティスト")])]
-          )
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "tile is-parent is-6" },
-        [
+            "div",
+            { staticClass: "tile is-parent is-6" },
+            [
+              _c(
+                "router-link",
+                {
+                  staticClass: "tile is-child notification is-primary box",
+                  attrs: {
+                    to: {
+                      name: "artists"
+                    }
+                  }
+                },
+                [
+                  _c("p", { staticClass: "title" }, [
+                    _vm._v("アーティスト一覧")
+                  ])
+                ]
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
           _c(
-            "router-link",
-            {
-              staticClass: "tile is-child notification is-primary box",
-              attrs: {
-                to: {
-                  name: "categories"
-                }
-              }
-            },
-            [_c("p", { staticClass: "title" }, [_vm._v("ジャンル")])]
+            "div",
+            { staticClass: "tile is-parent is-6" },
+            [
+              _c(
+                "router-link",
+                {
+                  staticClass: "tile is-child notification is-primary box",
+                  attrs: {
+                    to: {
+                      name: "categories"
+                    }
+                  }
+                },
+                [_c("p", { staticClass: "title" }, [_vm._v("タグ一覧")])]
+              )
+            ],
+            1
           )
-        ],
-        1
-      )
-    ])
+        ])
+      : _vm._e()
   ])
 }
 var staticRenderFns = []
@@ -21183,7 +21199,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\ntbody tr[data-v-530f1495] {\r\n  cursor: pointer;\n}\r\n", ""]);
+exports.push([module.i, "\ntbody tr[data-v-530f1495] {\r\n  cursor: pointer;\n}\n.editbtn[data-v-530f1495]{\r\n  cursor:pointer ;\n}\r\n", ""]);
 
 // exports
 
@@ -22079,7 +22095,7 @@ var render = function() {
               _c(
                 "span",
                 {
-                  staticClass: "tag is-primary",
+                  staticClass: "tag is-primary editbtn",
                   on: { click: _vm.categoryEdit }
                 },
                 [_vm._v("タグ編集")]
@@ -68651,7 +68667,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -68688,20 +68704,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      categories: [],
+      categories: null,
       user: null,
       isLoading: false
     };
   },
   components: {
     LoadingDisplayModal: __WEBPACK_IMPORTED_MODULE_0__LoadingDisplayModal_vue___default.a
+  },
+  computed: {
+    aggregateCategories: function aggregateCategories() {
+      if (this.categories) {
+        return;
+      }
+      // return cav(this.categories)
+      return "aaa";
+    }
   },
   created: function created() {
     var _this = this;
@@ -68720,16 +68744,36 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     getCategories: function getCategories() {
       var _this2 = this;
 
-      console.log("ggg");
       this.isLoading = true;
       axios.get('/api/users/' + this.user.uid + '/categories/').then(function (res) {
-        console.log(res);
-        _this2.categories = res.data.data;
+        // this.categories = res.data.data ;
+        _this2.categories = _this2.categoryCount(res.data.data);
         _this2.isLoading = false;
       });
     },
     reload: function reload() {
       this.getCategories();
+    },
+    categoryCount: function categoryCount(categoryDatas) {
+      var cats = [];
+      categoryDatas.forEach(function (category) {
+        var name = category.name;
+        var idx = cats.map(function (cat) {
+          return cat.name;
+        }).indexOf(name);
+
+        if (cats[idx]) {
+          cats[idx].count += 1;
+        } else {
+          cats.push({
+            name: name,
+            count: 1
+          });
+        }
+      });
+
+      cats.sort();
+      return cats;
     }
   }
 });
@@ -68767,7 +68811,7 @@ var render = function() {
           ),
           _vm._v(" "),
           _c("span", { staticClass: "title has-text-grey" }, [
-            _vm._v("ジャンル一覧")
+            _vm._v("タグ一覧")
           ])
         ],
         1
@@ -68789,7 +68833,9 @@ var render = function() {
                     _vm._v(_vm._s(category.name))
                   ]),
                   _vm._v(" "),
-                  _c("span", { staticClass: "tag " })
+                  _c("span", { staticClass: "tag " }, [
+                    _vm._v(_vm._s(category.count))
+                  ])
                 ]
               )
             ],

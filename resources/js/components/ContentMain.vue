@@ -1,18 +1,21 @@
 <template>
   <div class="column" >
-    <div class="tile is-ancestor">
+    <div class="notification" v-if="!isLogin">
+      <p>ログインして下さい</p>
+    </div>
+    <div class="tile is-ancestor" v-if="isLogin">
       <div class="tile is-parent is-6">
         <router-link :to="{
           name: 'artists' ,
         }" class="tile is-child notification is-primary box">
-          <p class="title">アーティスト</p>
+          <p class="title">アーティスト一覧</p>
         </router-link>
       </div>
       <div class="tile is-parent is-6">
         <router-link :to="{
           name: 'categories' ,
         }" class="tile is-child notification is-primary box">
-        <p class="title">ジャンル</p>
+        <p class="title">タグ一覧</p>
       </router-link>
       </div>
     </div>
@@ -36,6 +39,7 @@
             this.isLogin = true
           }else{
             this.isLogin = false
+            this.$router.replace('/login')
           }
         })
       },
