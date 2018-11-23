@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
+Route::get('categories/{id}/songs' , 'CategoryController@showSongsHaveCategory');
 Route::get('users/{uid}/categories' , 'UserController@showCategories');
 Route::resource('users' , 'UserController');
 Route::resource('karaokes' , 'KaraokeController');

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\Category as CategoryResource ;
 
+use Illuminate\Support\Collection ;
 use App\Category;
 use App\Song ;
+use App\Http\Resources\Song as SongResource ;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -62,6 +64,42 @@ class CategoryController extends Controller
         $song = Song::find( $id );
 
         return CategoryResource::collection( $song->categories );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showSongsHaveCategory($id){
+      $collection = collect([]);
+
+      $category = Category::find($id);
+      $target_tag_name = $category->name ;
+      $user = $category->song->artist->user ;
+      $songs = $user->songs ;
+      // dd($songs);
+      foreach( $songs as $song ){
+        foreach( $song->categories as $category ){
+          if($category->name == $target_tag_name ){
+            $collection = $collection->merge( $song );
+          }
+        }
+      }
+      // dd( $collection );
+      // $songs = $songs()->whereHas('categories' , function($query){
+      //   $query->where('name' ,'=' ,  $target_tag_name );
+      // })->get();
+      // dd( $user->songs()->whereHas('categories' , function($query) use ($target_tag_name){
+      //   $query->where('name' , '=' , $target_tag_name );
+      // })->get() );
+      // Song::
+      $songs = $user->songs()->whereHas('categories' , function($query) use ($target_tag_name){
+        $query->where('name' , '=' , $target_tag_name );
+      })->get() ;
+      return SongResource::collection( $songs );
+
     }
 
     /**

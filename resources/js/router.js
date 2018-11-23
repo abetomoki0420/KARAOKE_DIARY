@@ -55,6 +55,12 @@ const router = new VueRouter({
       name: 'categories' ,
       meta: { requiresAuth: true }
     },
+    {
+      path: '/categories/:category_id/:category_name/songs' ,
+      component: require('./components/ShowSongsHaveCategory.vue') ,
+      name: 'categories_songs' ,
+      meta: { requiresAuth: true }
+    },
   ]
 })
 
@@ -63,8 +69,10 @@ router.beforeEach( ( to , from , next ) => {
   if( requiresAuth ){
     firebase.auth().onAuthStateChanged( (user) => {
       if(user){
+        //認証している場合
         next()
       }else{
+        //認証していない場合
         next({
           path: '/' ,
         })

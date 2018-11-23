@@ -14,7 +14,7 @@
       <div class="tile is-parent is-6">
         <router-link :to="{
           name: 'categories' ,
-        }" class="tile is-child notification is-primary box">
+        }" class="tile is-child notification is-link box">
         <p class="title">タグ一覧</p>
       </router-link>
       </div>

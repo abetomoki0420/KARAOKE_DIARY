@@ -3,7 +3,7 @@
   <div class="title">
     <router-link :to="{
        name: 'main'}">
-      <span class="icon is-medium has-text-primary">
+      <span class="icon is-medium has-text-link">
         <i class="fas fa-arrow-circle-left"></i>
       </span>
     </router-link>
@@ -11,7 +11,13 @@
   </div>
   <div class="field is-grouped is-grouped-multiline">
     <div class="control" v-for="category in categories">
-      <router-link to="#" class="tags has-addons">
+      <router-link :to="{
+        name: 'categories_songs' ,
+        params:{
+          category_id: category.id ,
+          category_name: category.name ,
+        }
+        }" class="tags has-addons">
         <span class="tag is-link ">{{ category.name }}</span>
         <span class="tag ">{{ category.count }}</span>
       </router-link>
@@ -36,15 +42,6 @@
       components:{
         LoadingDisplayModal ,
       } ,
-      computed:{
-        aggregateCategories: function(){
-          if(this.categories){
-            return
-          }
-          // return cav(this.categories)
-          return "aaa"
-        }
-      },
       created(){
         firebase.auth().onAuthStateChanged( user => {
           this.user = user ? user : null ;
@@ -60,7 +57,6 @@
           this.isLoading = true
           axios.get('/api/users/' + this.user.uid  + '/categories/' )
           .then( (res) => {
-            // this.categories = res.data.data ;
             this.categories = this.categoryCount(res.data.data)
             this.isLoading = false
           });
@@ -71,6 +67,7 @@
         categoryCount: function(categoryDatas){
           let cats = [];
           categoryDatas.forEach( (category) => {
+            const id = +category.id
             const name = category.name
             const idx = cats.map( cat => {
               return cat.name
@@ -80,13 +77,14 @@
               cats[idx].count += 1
             }else{
               cats.push({
+                count: 1 ,
+                id: id ,
                 name: name ,
-                count: 1
               })
             }
           });
 
-          cats.sort( )
+          cats.sort()
           return cats
         }
       },

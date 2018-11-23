@@ -23,8 +23,17 @@
       </div>
       <div class="control" v-for="category in categories">
         <div class="tags has-addons are-small">
-          <a class="tag is-link">{{ category.name }}</a>
-          <a class="tag is-delete" v-if="isCategoryEditing" @click.prevent="deleteCategory(category.id)"></a>
+          <router-link :to="{
+            name: 'categories_songs' ,
+            params:{
+              category_id: category.id ,
+              category_name: category.name ,
+            }
+            }" class="tags has-addons">
+
+            <a class="tag is-link">{{ category.name }}</a>
+            <a class="tag is-delete" v-if="isCategoryEditing" @click.prevent="deleteCategory(category.id)"></a>
+          </router-link>
         </div>
       </div>
 
@@ -86,8 +95,6 @@ export default {
     LoadingDisplayModal,
   },
   created() {
-    // this.getSongDetails()
-    // this.getSongCategories()
     this.getDatas()
   },
   computed: {
@@ -138,6 +145,7 @@ export default {
       if(this.isCategoryAdding){
         return
       }
+
       this.isCategoryAdding = true
       axios.post('/api/categories/' , {
         song_id : this.$route.params.id ,
