@@ -18,8 +18,8 @@ class Song extends JsonResource
         return [
           'id' => $this->id ,
           'artist_id' => $this->artist_id ,
-          'artist_name' => $this->artist->name , 
-          'name' => $this->name
+          'artist_name' => $this->artist->name ,
+          'name' => $this->name ,
         ];
     }
 }

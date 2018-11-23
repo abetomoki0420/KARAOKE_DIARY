@@ -18,6 +18,7 @@ class Artist extends JsonResource
           'id' => $this->id ,
           'user_id' => $this->user_id ,
           'name' => $this->name ,
+          'songs_count' => $this->songs->count() ,
         ];
     }
 }

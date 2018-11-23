@@ -23,7 +23,8 @@
           name: artist.name ,
           }
       }" class="tile is-child notification is-primary box">
-        <p class="title">{{ artist.name }}</p>
+        <p class="title is-3">{{ artist.name }}</p>
+        <p class="subtitle is-5">登録曲数: {{ artist.songs_count }}</p>
       </router-link>
     </div>
   </div>
