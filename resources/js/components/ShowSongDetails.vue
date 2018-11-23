@@ -48,7 +48,6 @@
     </div>
   </div>
   <!-- tags end -->
-  TEST
   <table class="table is-fullwidth is-hoverable is-narrow is-bordered details">
     <thead>
       <tr>
@@ -142,6 +141,10 @@ export default {
       this.isCategoryEditing = !this.isCategoryEditing
     },
     addCategory: function(){
+      if( this.categoryName.length == 0 ){
+        return
+      }
+
       if(this.isCategoryAdding){
         return
       }
