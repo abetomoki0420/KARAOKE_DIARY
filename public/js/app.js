@@ -21380,7 +21380,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       }
 
       this.isCategoryAdding = true;
-      axios.post('/api/categories', {
+      axios.post('/api/categories/', {
         song_id: this.$route.params.id,
         name: this.categoryName
       }).then(function (res) {
