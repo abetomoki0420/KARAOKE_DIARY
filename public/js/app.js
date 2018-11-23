@@ -19278,7 +19278,7 @@ var render = function() {
   return _c("div", { staticClass: "column" }, [
     !_vm.isLogin
       ? _c("div", { staticClass: "notification" }, [
-          _c("p", [_vm._v("ログインして下さい")])
+          _c("p", [_vm._v("ログインをして下さい")])
         ])
       : _vm._e(),
     _vm._v(" "),

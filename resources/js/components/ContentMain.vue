@@ -1,7 +1,7 @@
 <template>
   <div class="column" >
     <div class="notification" v-if="!isLogin">
-      <p>ログインして下さい</p>
+      <p>ログインをして下さい</p>
     </div>
     <div class="tile is-ancestor" v-if="isLogin">
       <div class="tile is-parent is-6">
