@@ -54,6 +54,9 @@
       },
       methods : {
         getCategories: function(){
+          if(this.isLoading){
+            return
+          }
           this.isLoading = true
           axios.get('/api/users/' + this.user.uid  + '/categories/' )
           .then( (res) => {
