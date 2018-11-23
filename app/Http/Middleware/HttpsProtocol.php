@@ -18,7 +18,7 @@ class HttpsProtocol
 
       if (!$request->secure() && config('app.env') === 'production' || config('app.env') === 'staging') {
           return redirect()->secure($request->getRequestUri());
-      }      
+      }
         return $next($request);
     }
 }

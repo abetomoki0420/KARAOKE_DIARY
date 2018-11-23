@@ -17,14 +17,11 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
-Route::group(['scheme' => 'https'], function () {
-  Route::get('categories/{id}/songs' , 'CategoryController@showSongsHaveCategory');
-  Route::get('users/{uid}/categories' , 'UserController@showCategories');
-  Route::resource('users' , 'UserController');
-  Route::resource('karaokes' , 'KaraokeController');
-  Route::resource('artists' , 'ArtistController');
-  Route::resource('songs' , 'SongController');
-  Route::resource('song_details' , 'SongDetailController');
-  Route::resource('categories' , 'CategoryController');
-    // Route::get(...)->name(...);
-});
+Route::get('categories/{id}/songs' , 'CategoryController@showSongsHaveCategory');
+Route::get('users/{uid}/categories' , 'UserController@showCategories');
+Route::resource('users' , 'UserController');
+Route::resource('karaokes' , 'KaraokeController');
+Route::resource('artists' , 'ArtistController');
+Route::resource('songs' , 'SongController');
+Route::resource('song_details' , 'SongDetailController');
+Route::resource('categories' , 'CategoryController');
