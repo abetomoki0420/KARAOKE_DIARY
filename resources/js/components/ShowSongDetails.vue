@@ -150,15 +150,15 @@ export default {
       }
 
       this.isCategoryAdding = true
-      axios.post('/api/categories/' , {
-        song_id : this.$route.params.id ,
-        name: this.categoryName ,
-      })
-      .then( (res) => {
-        this.categoryName = ""
-        this.categories = res.data.data
-        this.isCategoryAdding = false
-      })
+      // axios.post('/api/categories/' , {
+      //   song_id : this.$route.params.id ,
+      //   name: this.categoryName ,
+      // })
+      // .then( (res) => {
+      //   this.categoryName = ""
+      //   this.categories = res.data.data
+      //   this.isCategoryAdding = false
+      // })
     },
     deleteCategory: function(id){
       if( !confirm( 'このタグを削除しますか？' ) ){

@@ -37,17 +37,6 @@
           this.user = user ? user : null ;
           if(this.user){
             this.isLogin = true
-
-            axios.post('/api/categories/' , {
-              song_id : 51 ,
-              name: 'test' ,
-            })
-            .then( (res) => {
-
-            })
-
-
-
           }else{
             this.isLogin = false
             this.$router.replace('/login')
