@@ -131,8 +131,8 @@ export default {
         });
     },
     getDatas: function() {
-      this.getSongDetails()
       this.getSongCategories()
+      this.getSongDetails()
     },
     reload: function() {
       this.getDatas()
