@@ -160,7 +160,7 @@ export default {
       })
       .then( (res) => {
         this.categoryName = ""
-        this.categories = this.categories = res.data.data
+        this.categories = res.data.data
         this.isCategoryAdding = false
       })
     },
