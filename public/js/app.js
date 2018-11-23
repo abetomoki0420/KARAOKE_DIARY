@@ -22614,7 +22614,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -22688,10 +22688,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     getCategories: function getCategories() {
       var _this2 = this;
 
+      if (this.isLoading) {
+        return;
+      }
       this.isLoading = true;
-      axios.get('/api/users/' + this.user.uid + '/categories/').then(function (res) {
+      axios.get('/api/users/' + this.user.uid + '/categories').then(function (res) {
         _this2.categories = _this2.categoryCount(res.data.data);
         _this2.isLoading = false;
+      }).catch(function (error) {
+        console.log(error);
       });
     },
     reload: function reload() {
