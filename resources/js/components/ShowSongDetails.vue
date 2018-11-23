@@ -79,9 +79,9 @@ import LoadingDisplayModal from './LoadingDisplayModal.vue'
 export default {
   data: function() {
     return {
-      songdetails: null,
-      categories: null,
-      isDetailsLoading: false,
+      songdetails: null ,
+      categories: null ,
+      isDetailsLoading: false ,
       isCategoriesLoading: false,
       isCategoryEditing: false ,
       isCategoryAdding: false ,
