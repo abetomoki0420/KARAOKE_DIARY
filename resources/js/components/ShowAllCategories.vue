@@ -62,6 +62,8 @@
           .then( (res) => {
             this.categories = this.categoryCount(res.data.data)
             this.isLoading = false
+          }).catch( (error)=>{
+            console.log(error)
           });
         },
         reload: function(){
