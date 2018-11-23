@@ -48,7 +48,7 @@
     </div>
   </div>
   <!-- tags end -->
-
+  TEST
   <table class="table is-fullwidth is-hoverable is-narrow is-bordered details">
     <thead>
       <tr>
