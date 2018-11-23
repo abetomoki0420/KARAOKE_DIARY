@@ -79,7 +79,6 @@ class CategoryController extends Controller
       $target_tag_name = $category->name ;
       $user = $category->song->artist->user ;
       $songs = $user->songs ;
-      // dd($songs);
       foreach( $songs as $song ){
         foreach( $song->categories as $category ){
           if($category->name == $target_tag_name ){
@@ -87,14 +86,6 @@ class CategoryController extends Controller
           }
         }
       }
-      // dd( $collection );
-      // $songs = $songs()->whereHas('categories' , function($query){
-      //   $query->where('name' ,'=' ,  $target_tag_name );
-      // })->get();
-      // dd( $user->songs()->whereHas('categories' , function($query) use ($target_tag_name){
-      //   $query->where('name' , '=' , $target_tag_name );
-      // })->get() );
-      // Song::
       $songs = $user->songs()->whereHas('categories' , function($query) use ($target_tag_name){
         $query->where('name' , '=' , $target_tag_name );
       })->get() ;
