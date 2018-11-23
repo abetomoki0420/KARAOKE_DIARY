@@ -58,7 +58,7 @@
             return
           }
           this.isLoading = true
-          axios.get('/api/users/' + this.user.uid  + '/categories/' )
+          axios.get('/api/users/' + this.user.uid  + '/categories' )
           .then( (res) => {
             this.categories = this.categoryCount(res.data.data)
             this.isLoading = false
