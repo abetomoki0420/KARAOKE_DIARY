@@ -86,6 +86,9 @@ export default {
       isCategoryAdding: false ,
       isCategoryDeleting: false ,
       categoryName : "" ,
+      header:{
+        'Access-Control-Allow-Origin': '*' ,
+      },
     }
   },
   components: {
@@ -153,7 +156,7 @@ export default {
       axios.post('/api/categories/' , {
         song_id : this.$route.params.id ,
         name: this.categoryName ,
-      })
+      } , {headers: this.header })
       .then( (res) => {
         this.categoryName = ""
         this.categories = this.categories = res.data.data
