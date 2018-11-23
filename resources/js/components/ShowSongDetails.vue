@@ -156,7 +156,8 @@ export default {
       axios.post('/api/categories/' , {
         song_id : this.$route.params.id ,
         name: this.categoryName ,
-      } , {headers: this.header })
+        headers: this.header ,
+      })
       .then( (res) => {
         this.categoryName = ""
         this.categories = this.categories = res.data.data
