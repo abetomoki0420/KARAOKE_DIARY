@@ -150,7 +150,8 @@ export default {
       }
 
       this.isCategoryAdding = true
-      axios.post('/api/categories/' , {
+      // axios.post('/api/categories/' , {
+      axios.post('https://caraoke-diary.herokuapp.com/api/categories/' , {
         song_id : this.$route.params.id ,
         name: this.categoryName ,
       })
