@@ -7,7 +7,7 @@
   <title>KARAOKE DIARY</title>
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
   <link rel="manifest" href="{{ asset('manifest.json') }}">
-  <script>
+  <!-- <script>
     ( () => {
       if('serviceWorker' in navigator ){
         navigator.serviceWorker.register("{{ asset('service-worker.js') }}")
@@ -16,7 +16,7 @@
         })
       }
     })();
-  </script>
+  </script> -->
 </head>
 <body>
 

@@ -17440,6 +17440,23 @@ readers do not read off random characters that represent icons */
  */
 
 @font-face {
+  font-family: 'Font Awesome 5 Brands';
+  font-style: normal;
+  font-weight: normal;
+  src: url(/fonts/vendor/@fortawesome/fontawesome-free/webfa-brands-400.eot?ec0716ae8aa1ba781a1a6bcbce833f6c);
+  src: url(/fonts/vendor/@fortawesome/fontawesome-free/webfa-brands-400.eot?ec0716ae8aa1ba781a1a6bcbce833f6c) format("embedded-opentype"), url(/fonts/vendor/@fortawesome/fontawesome-free/webfa-brands-400.woff2?659c4d58b00226541ef95c3a76e169c5) format("woff2"), url(/fonts/vendor/@fortawesome/fontawesome-free/webfa-brands-400.woff?8b7a9afd7b95f62e6ee8a72930bfb9ed) format("woff"), url(/fonts/vendor/@fortawesome/fontawesome-free/webfa-brands-400.ttf?b69de69a4ff8ca0abe96ec0b0c180c5b) format("truetype"), url(/fonts/vendor/@fortawesome/fontawesome-free/webfa-brands-400.svg?42f9fd6acee87559ac0d6a33488db65e) format("svg");
+}
+
+.fab {
+  font-family: 'Font Awesome 5 Brands';
+}
+
+/*!
+ * Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
+ * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+ */
+
+@font-face {
   font-family: 'Font Awesome 5 Free';
   font-style: normal;
   font-weight: 900;

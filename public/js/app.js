@@ -69822,6 +69822,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
 
 
 
@@ -70967,7 +70968,10 @@ var render = function() {
                     staticClass: "button is-primary",
                     on: { click: _vm.login }
                   },
-                  [_vm._v("\r\n          Login\r\n        ")]
+                  [
+                    _c("i", { staticClass: "fab fa-google" }),
+                    _vm._v("\r\n          Login with Google\r\n        ")
+                  ]
                 )
               : _vm._e(),
             _vm._v(" "),

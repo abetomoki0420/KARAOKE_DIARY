@@ -24,7 +24,8 @@
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="button is-primary" @click="login" v-if="!isLogin">
-          Login
+          <i class="fab fa-google"></i>
+          Login with Google
         </div>
         <div class="button is-primary" @click="logout" v-if="isLogin">
           <span>Logout</span>
@@ -111,7 +112,7 @@ export default {
         this.isInformationModal = true
       },
       close: function(){
-        this.isInformationModal = false 
+        this.isInformationModal = false
       },
   }
 }
