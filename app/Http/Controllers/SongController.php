@@ -48,6 +48,28 @@ class SongController extends Controller
     }
 
     /**
+     * Store a newly created YoutubeURL about song in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateURL(Request $request)
+    {
+      $baseURL = 'https://www.youtube.com/embed/' ;
+
+      $id = $request->input('id','');
+      $song = Song::find($id);
+
+      $url = $request->input('youtubeURL' , '');
+      $arr = explode('v=' , $url);
+      $youtubeID = $arr[1] ;
+      $embedURL = $baseURL . $youtubeID ;
+
+      $song->URL = $embedURL ;
+      $song->save() ;
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -59,6 +81,22 @@ class SongController extends Controller
       return SongDetailResource::collection( $song->Details->sortByDesc('created_at') );
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showURL($id)
+    {
+      $song = Song::find( $id );
+
+      if(is_null($song->URL)){
+        return null ;
+      }else{
+        return $song->URL ;
+      }
+    }
     /**
      * Show the form for editing the specified resource.
      *

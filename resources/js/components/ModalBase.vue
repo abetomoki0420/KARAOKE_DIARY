@@ -1,11 +1,11 @@
 <template>
-  <transition name="modal" appear>
-    <div class="modal modal-overlay" @click.self="$emit('close')">
-      <div class="modal-window ">
-        <div class="modal-content">
+  <transition name="mymodal" appear>
+    <div class="mymodal mymodal-overlay" @click.self="$emit('close')">
+      <div class="mymodal-window">
+        <div class="mymodal-content">
           <slot/>
         </div>
-        <footer class="modal-footer">
+        <footer class="mymodal-footer">
           <slot name="submit">
             <button @click="$emit('close')">Close</button>
           </slot>
@@ -16,8 +16,8 @@
 </template>
 
 <style lang="scss" scoped>
-.modal {
-  &.modal-overlay {
+.mymodal {
+  &.mymodal-overlay {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -49,24 +49,24 @@
 }
 
 // オーバーレイのトランジション
-.modal-enter-active, .modal-leave-active {
+.mymodal-enter-active, .mymodal-leave-active {
   transition: opacity 0.4s;
 
   // オーバーレイに包含されているモーダルウィンドウのトランジション
-  .modal-window {
+  .mymodal-window {
     transition: opacity 0.4s, transform 0.4s;
   }
 }
 
 // ディレイを付けるとモーダルウィンドウが消えた後にオーバーレイが消える
-.modal-leave-active {
+.mymodal-leave-active {
   transition: opacity 0.6s ease 0.4s;
 }
 
-.modal-enter, .modal-leave-to {
+.mymodal-enter, .mymodal-leave-to {
   opacity: 0;
 
-  .modal-window {
+  .mymodal-window {
     opacity: 0;
     transform: translateY(-100px);
   }

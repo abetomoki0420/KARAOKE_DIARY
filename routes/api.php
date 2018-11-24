@@ -21,6 +21,8 @@ Route::get('users/{uid}/categories' , 'UserController@showCategories');
 Route::resource('users' , 'UserController');
 Route::resource('karaokes' , 'KaraokeController');
 Route::resource('artists' , 'ArtistController');
+Route::get('songs/{id}/URL' , 'SongController@showURL');
+Route::post('songs/updateURL' , 'SongController@updateURL');
 Route::resource('songs' , 'SongController');
 Route::resource('song_details' , 'SongDetailController');
 Route::get('categories/{id}/songs' , 'CategoryController@showSongsHaveCategory');

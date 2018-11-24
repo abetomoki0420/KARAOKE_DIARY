@@ -19963,6 +19963,64 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -19971,9 +20029,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   data: function data() {
     return {
       artists: [],
+      artists_org: [],
       user: null,
       isLogin: false,
-      isLoading: false
+      isLoading: false,
+      currentPage: 1,
+      DIVIDEDBY: 6,
+      dividedArtists: null,
+      isSortTypeByAlpha: false,
+      isSortAlphaDown: true,
+      isSortTypeByDate: true,
+      isSortDateDown: true
     };
   },
   components: {
@@ -19981,12 +20047,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     LoadingDisplayModal: __WEBPACK_IMPORTED_MODULE_1__LoadingDisplayModal_vue___default.a
   },
   computed: {
-    artists_count: function artists_count() {
-      if (this.artists) {
-        return this.artists.length;
-      } else {
-        return 0;
+    totalNumberOfPages: function totalNumberOfPages() {
+      var total = 0;
+      var artists_count = this.artists.length;
+      total += Math.floor(artists_count / this.DIVIDEDBY);
+      if (artists_count % this.DIVIDEDBY !== 0) {
+        total += 1;
       }
+      return total;
     }
   },
   created: function created() {
@@ -20005,12 +20073,57 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
 
   methods: {
+    setDividedArtists: function setDividedArtists(pageNum) {
+      this.currentPage = pageNum;
+
+      this.dividedArtists = this.artists.slice((this.currentPage - 1) * this.DIVIDEDBY, this.DIVIDEDBY * this.currentPage);
+    },
+    isDispLeftEllipsis: function isDispLeftEllipsis() {
+      if (this.currentPage > 3 && 5 < this.totalNumberOfPages) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    isDispRightEllipsis: function isDispRightEllipsis() {
+      if (this.currentPage < this.totalNumberOfPages - 2 && 5 < this.totalNumberOfPages) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    isDispCenterSide: function isDispCenterSide(pageNum) {
+      if (pageNum === 1) {
+        return false;
+      }
+      if ((this.currentPage === 1 || this.currentPage === 2) && pageNum != this.totalNumberOfPages && (pageNum === 3 || pageNum === 4)) {
+        return true;
+      }
+
+      if (pageNum === this.totalNumberOfPages) {
+        return false;
+      }
+      //現在のページが最後かその直前の場合、
+      //最後から2つ前と3つ前のページを表示させる
+      if ((this.currentPage === this.totalNumberOfPages || this.currentPage === this.totalNumberOfPages - 1) && (pageNum === this.totalNumberOfPages - 2 || pageNum === this.totalNumberOfPages - 3)) {
+        return true;
+      }
+
+      if (pageNum === this.currentPage - 1 || pageNum === this.currentPage || pageNum === this.currentPage + 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     getArtists: function getArtists() {
       var _this2 = this;
 
       this.isLoading = true;
       axios.get('/api/users/' + this.user.uid).then(function (res) {
         _this2.artists = res.data.data;
+        _this2.artists_org = _this2.artists;
+        _this2.pageNum = 1;
+        _this2.setDividedArtists(1);
         _this2.isLoading = false;
       });
     },
@@ -20026,7 +20139,78 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       axios.delete('/api/artists/' + artist.id).then(function (res) {
         _this3.reload();
       });
+    },
+    sortArtistsByAlpha: function sortArtistsByAlpha() {
+      var _this4 = this;
+
+      var katakanaToHiragana = function katakanaToHiragana(src) {
+        return src.replace(/[\u30a1-\u30f6]/g, function (match) {
+          var chr = match.charCodeAt(0) - 0x60;
+          return String.fromCharCode(chr);
+        });
+      };
+
+      var sortAlphaUp = function sortAlphaUp(a, b) {
+        a = katakanaToHiragana(a.toString());
+        b = katakanaToHiragana(b.toString());
+        if (a < b) {
+          return -1;
+        } else if (a > b) {
+          return 1;
+        } else {
+          return 0;
+        }
+      };
+
+      var sortAlphaDown = function sortAlphaDown(a, b) {
+        a = katakanaToHiragana(a.toString());
+        b = katakanaToHiragana(b.toString());
+        if (b < a) {
+          return -1;
+        } else if (b > a) {
+          return 1;
+        } else {
+          return 0;
+        }
+      };
+
+      this.isSortTypeByAlpha = true;
+      this.isSortTypeByDate = false;
+
+      this.isSortAlphaDown = !this.isSortAlphaDown;
+      var unordered = this.artists.map(function (artist) {
+        return artist.name;
+      });
+      if (this.isSortAlphaDown) {
+        unordered.sort(sortAlphaDown);
+      } else {
+        unordered.sort(sortAlphaUp);
+      }
+
+      var ordered = [];
+      unordered.forEach(function (u) {
+        _this4.artists.forEach(function (artist) {
+          if (u === artist.name) {
+            ordered.push(artist);
+          }
+        });
+      });
+
+      this.artists = ordered;
+      this.setDividedArtists(this.currentPage);
+    },
+    sortArtistsByDate: function sortArtistsByDate() {
+
+      this.isSortTypeByDate = true;
+      this.isSortTypeByAlpha = false;
+
+      this.isSortDateDown = !this.isSortDateDown;
+
+      this.artists = this.artists_org.reverse();
+
+      this.setDividedArtists(this.currentPage);
     }
+
   }
 });
 
@@ -20185,6 +20369,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     registerArtist: function registerArtist() {
       var _this2 = this;
 
+      if (this.name.length < 1) {
+        return;
+      }
+
       if (this.isRegistering) {
         return;
       }
@@ -20239,7 +20427,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.modal.modal-overlay[data-v-165b7b7a] {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(0, 0, 0, 0.5);\n}\n.modal-window[data-v-165b7b7a] {\n  background: #fff;\n  border-radius: 4px;\n  overflow: hidden;\n}\n.modal-content[data-v-165b7b7a] {\n  padding: 10px 20px;\n  margin: 0;\n}\n.modal-footer[data-v-165b7b7a] {\n  background: #ccc;\n  padding: 10px;\n  text-align: right;\n}\n.modal-enter-active[data-v-165b7b7a], .modal-leave-active[data-v-165b7b7a] {\n  -webkit-transition: opacity 0.4s;\n  transition: opacity 0.4s;\n}\n.modal-enter-active .modal-window[data-v-165b7b7a], .modal-leave-active .modal-window[data-v-165b7b7a] {\n    -webkit-transition: opacity 0.4s, -webkit-transform 0.4s;\n    transition: opacity 0.4s, -webkit-transform 0.4s;\n    transition: opacity 0.4s, transform 0.4s;\n    transition: opacity 0.4s, transform 0.4s, -webkit-transform 0.4s;\n}\n.modal-leave-active[data-v-165b7b7a] {\n  -webkit-transition: opacity 0.6s ease 0.4s;\n  transition: opacity 0.6s ease 0.4s;\n}\n.modal-enter[data-v-165b7b7a], .modal-leave-to[data-v-165b7b7a] {\n  opacity: 0;\n}\n.modal-enter .modal-window[data-v-165b7b7a], .modal-leave-to .modal-window[data-v-165b7b7a] {\n    opacity: 0;\n    -webkit-transform: translateY(-100px);\n            transform: translateY(-100px);\n}\n", ""]);
+exports.push([module.i, "\n.mymodal.mymodal-overlay[data-v-165b7b7a] {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  background: rgba(0, 0, 0, 0.5);\n}\n.mymodal-window[data-v-165b7b7a] {\n  background: #fff;\n  border-radius: 4px;\n  overflow: hidden;\n}\n.mymodal-content[data-v-165b7b7a] {\n  padding: 10px 20px;\n  margin: 0;\n}\n.mymodal-footer[data-v-165b7b7a] {\n  background: #ccc;\n  padding: 10px;\n  text-align: right;\n}\n.mymodal-enter-active[data-v-165b7b7a], .mymodal-leave-active[data-v-165b7b7a] {\n  -webkit-transition: opacity 0.4s;\n  transition: opacity 0.4s;\n}\n.mymodal-enter-active .mymodal-window[data-v-165b7b7a], .mymodal-leave-active .mymodal-window[data-v-165b7b7a] {\n    -webkit-transition: opacity 0.4s, -webkit-transform 0.4s;\n    transition: opacity 0.4s, -webkit-transform 0.4s;\n    transition: opacity 0.4s, transform 0.4s;\n    transition: opacity 0.4s, transform 0.4s, -webkit-transform 0.4s;\n}\n.mymodal-leave-active[data-v-165b7b7a] {\n  -webkit-transition: opacity 0.6s ease 0.4s;\n  transition: opacity 0.6s ease 0.4s;\n}\n.mymodal-enter[data-v-165b7b7a], .mymodal-leave-to[data-v-165b7b7a] {\n  opacity: 0;\n}\n.mymodal-enter .mymodal-window[data-v-165b7b7a], .mymodal-leave-to .mymodal-window[data-v-165b7b7a] {\n    opacity: 0;\n    -webkit-transform: translateY(-100px);\n            transform: translateY(-100px);\n}\n", ""]);
 
 // exports
 
@@ -20252,11 +20440,11 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("transition", { attrs: { name: "modal", appear: "" } }, [
+  return _c("transition", { attrs: { name: "mymodal", appear: "" } }, [
     _c(
       "div",
       {
-        staticClass: "modal modal-overlay",
+        staticClass: "mymodal mymodal-overlay",
         on: {
           click: function($event) {
             if ($event.target !== $event.currentTarget) {
@@ -20267,12 +20455,12 @@ var render = function() {
         }
       },
       [
-        _c("div", { staticClass: "modal-window " }, [
-          _c("div", { staticClass: "modal-content" }, [_vm._t("default")], 2),
+        _c("div", { staticClass: "mymodal-window" }, [
+          _c("div", { staticClass: "mymodal-content" }, [_vm._t("default")], 2),
           _vm._v(" "),
           _c(
             "footer",
-            { staticClass: "modal-footer" },
+            { staticClass: "mymodal-footer" },
             [
               _vm._t("submit", [
                 _c(
@@ -20524,38 +20712,122 @@ var render = function() {
     "div",
     { staticClass: "column" },
     [
-      _vm.isLogin
-        ? _c(
-            "div",
-            { staticClass: "title" },
-            [
-              _c(
-                "router-link",
-                {
-                  attrs: {
-                    to: {
-                      name: "main"
-                    }
-                  }
-                },
+      _c("nav", { staticClass: "level" }, [
+        _c("div", { staticClass: "level-left" }, [
+          _vm.isLogin
+            ? _c(
+                "div",
+                { staticClass: "level-item title" },
                 [
                   _c(
-                    "span",
-                    { staticClass: "icon is-medium has-text-primary" },
-                    [_c("i", { staticClass: "fas fa-arrow-circle-left" })]
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c("span", { staticClass: "title has-text-grey" }, [
-                _vm._v("アーティスト一覧")
-              ]),
-              _vm._v(" "),
-              _c("register-artist-modal", { on: { registered: _vm.reload } })
-            ],
-            1
-          )
-        : _vm._e(),
+                    "router-link",
+                    {
+                      attrs: {
+                        to: {
+                          name: "main"
+                        }
+                      }
+                    },
+                    [
+                      _c(
+                        "span",
+                        { staticClass: "icon is-medium has-text-primary" },
+                        [_c("i", { staticClass: "fas fa-arrow-circle-left" })]
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "title has-text-grey" }, [
+                    _vm._v("アーティスト一覧")
+                  ]),
+                  _vm._v(" "),
+                  _c("register-artist-modal", {
+                    on: { registered: _vm.reload }
+                  })
+                ],
+                1
+              )
+            : _vm._e()
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "level level-right is-mobile" }, [
+          _c("div", { staticClass: "level-right" }, [
+            _c(
+              "div",
+              {
+                staticClass: "level-item",
+                on: { click: _vm.sortArtistsByAlpha }
+              },
+              [
+                _vm.isSortAlphaDown
+                  ? _c(
+                      "span",
+                      {
+                        class: {
+                          "icon is-medium has-text-primary":
+                            _vm.isSortTypeByAlpha,
+                          "icon is-medium has-text-grey": !_vm.isSortTypeByAlpha
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-sort-alpha-down" })]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                !_vm.isSortAlphaDown
+                  ? _c(
+                      "span",
+                      {
+                        class: {
+                          "icon is-medium has-text-primary":
+                            _vm.isSortTypeByAlpha,
+                          "icon is-medium has-text-grey": !_vm.isSortTypeByAlpha
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-sort-alpha-up" })]
+                    )
+                  : _vm._e()
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass: "level-item",
+                on: { click: _vm.sortArtistsByDate }
+              },
+              [
+                !_vm.isSortDateDown
+                  ? _c(
+                      "span",
+                      {
+                        class: {
+                          "icon is-medium has-text-primary":
+                            _vm.isSortTypeByDate,
+                          "icon is-medium has-text-grey": !_vm.isSortTypeByDate
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-sort-amount-down" })]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.isSortDateDown
+                  ? _c(
+                      "span",
+                      {
+                        class: {
+                          "icon is-medium has-text-primary":
+                            _vm.isSortTypeByDate,
+                          "icon is-medium has-text-grey": !_vm.isSortTypeByDate
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-sort-amount-up" })]
+                    )
+                  : _vm._e()
+              ]
+            )
+          ])
+        ])
+      ]),
       _vm._v(" "),
       !_vm.isLogin
         ? _c("div", [_c("span", [_vm._v("ログインして下さい")])])
@@ -20564,7 +20836,7 @@ var render = function() {
       _c(
         "div",
         { staticClass: "tile is-ancestor" },
-        _vm._l(_vm.artists, function(artist) {
+        _vm._l(_vm.dividedArtists, function(artist) {
           return _c(
             "div",
             { staticClass: "tile is-parent is-4 artist" },
@@ -20607,6 +20879,109 @@ var render = function() {
           )
         })
       ),
+      _vm._v(" "),
+      _vm.artists.length > 0
+        ? _c(
+            "nav",
+            {
+              staticClass: "pagination",
+              attrs: { role: "navigation", "aria-label": "pagination" }
+            },
+            [
+              _c(
+                "ul",
+                { staticClass: "pagination-list" },
+                [
+                  _c("li", [
+                    _c(
+                      "a",
+                      {
+                        class: {
+                          "pagination-link is-current": 1 === _vm.currentPage,
+                          "pagination-link": 1 !== _vm.currentPage
+                        },
+                        on: {
+                          click: function($event) {
+                            _vm.setDividedArtists(1)
+                          }
+                        }
+                      },
+                      [_vm._v("1")]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _vm.isDispLeftEllipsis()
+                    ? _c("li", [
+                        _c("span", { staticClass: "pagination-ellipsis" }, [
+                          _vm._v("…")
+                        ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm._l(_vm.totalNumberOfPages, function(pageNum) {
+                    return _vm.isDispCenterSide(pageNum)
+                      ? _c("li", [
+                          _c(
+                            "a",
+                            {
+                              class: {
+                                "pagination-link is-current":
+                                  pageNum === _vm.currentPage,
+                                "pagination-link": pageNum !== _vm.currentPage
+                              },
+                              on: {
+                                click: function($event) {
+                                  _vm.setDividedArtists(pageNum)
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\r\n          " +
+                                  _vm._s(pageNum) +
+                                  "\r\n        "
+                              )
+                            ]
+                          )
+                        ])
+                      : _vm._e()
+                  }),
+                  _vm._v(" "),
+                  _vm.isDispRightEllipsis()
+                    ? _c("li", [
+                        _c("span", { staticClass: "pagination-ellipsis" }, [
+                          _vm._v("…")
+                        ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("li", [
+                    _vm.totalNumberOfPages != 1
+                      ? _c(
+                          "a",
+                          {
+                            class: {
+                              "pagination-link is-current":
+                                _vm.totalNumberOfPages === _vm.currentPage,
+                              "pagination-link":
+                                _vm.totalNumberOfPages !== _vm.currentPage
+                            },
+                            on: {
+                              click: function($event) {
+                                _vm.setDividedArtists(_vm.totalNumberOfPages)
+                              }
+                            }
+                          },
+                          [_vm._v(_vm._s(_vm.totalNumberOfPages))]
+                        )
+                      : _vm._e()
+                  ])
+                ],
+                2
+              )
+            ]
+          )
+        : _vm._e(),
       _vm._v(" "),
       _vm.isLoading ? _c("loading-display-modal") : _vm._e()
     ],
@@ -20709,7 +21084,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\n.song{\r\n  position: relative;\n}\r\n", ""]);
+exports.push([module.i, "\n.tile.is-ancestor{\r\n  -ms-flex-wrap: wrap;\r\n      flex-wrap: wrap;\n}\n.song{\r\n  position: relative;\n}\r\n", ""]);
 
 // exports
 
@@ -20758,6 +21133,70 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -20766,7 +21205,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   data: function data() {
     return {
       songs: [],
-      isLoading: false
+      songs_org: [],
+      isLoading: false,
+      currentPage: 1,
+      DIVIDEDBY: 6,
+      isSortAlphaDown: true,
+      isSortTypeByAlpha: false,
+      isSortDateDown: true,
+      isSortTypeByDate: true //Default
+
     };
   },
   components: {
@@ -20778,18 +21225,69 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
 
   computed: {
-    songs_count: function songs_count() {
-      return this.songs.length;
+    totalNumberOfPages: function totalNumberOfPages() {
+      var total = 0;
+      var songs_count = this.songs.length;
+      total += Math.floor(songs_count / this.DIVIDEDBY);
+      if (songs_count % this.DIVIDEDBY !== 0) {
+        total += 1;
+      }
+      return total;
     }
   },
   methods: {
+    setDividedSongs: function setDividedSongs(pageNum) {
+      this.currentPage = pageNum;
+
+      this.dividedSongs = this.songs.slice((this.currentPage - 1) * this.DIVIDEDBY, this.DIVIDEDBY * this.currentPage);
+    },
+    isDispLeftEllipsis: function isDispLeftEllipsis() {
+      if (this.currentPage > 3 && 5 < this.totalNumberOfPages) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    isDispRightEllipsis: function isDispRightEllipsis() {
+      if (this.currentPage < this.totalNumberOfPages - 2 && 5 < this.totalNumberOfPages) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    isDispCenterSide: function isDispCenterSide(pageNum) {
+      if (pageNum === 1) {
+        return false;
+      }
+      if ((this.currentPage === 1 || this.currentPage === 2) && pageNum != this.totalNumberOfPages && (pageNum === 3 || pageNum === 4)) {
+        return true;
+      }
+
+      if (pageNum === this.totalNumberOfPages) {
+        return false;
+      }
+      //現在のページが最後かその直前の場合、
+      //最後から2つ前と3つ前のページを表示させる
+      if ((this.currentPage === this.totalNumberOfPages || this.currentPage === this.totalNumberOfPages - 1) && (pageNum === this.totalNumberOfPages - 2 || pageNum === this.totalNumberOfPages - 3)) {
+        return true;
+      }
+
+      if (pageNum === this.currentPage - 1 || pageNum === this.currentPage || pageNum === this.currentPage + 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     getSongs: function getSongs() {
       var _this = this;
 
       this.isLoading = true;
       axios.get('/api/artists/' + this.$route.params.id).then(function (res) {
         _this.songs = res.data.data;
+        _this.songs_org = _this.songs;
         _this.isLoading = false;
+        _this.currentPage = 1;
+        _this.setDividedSongs(1);
       });
     },
     reload: function reload() {
@@ -20805,6 +21303,75 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       axios.delete('/api/songs/' + song.id).then(function (res) {
         _this2.reload();
       });
+    },
+    sortSongsByAlpha: function sortSongsByAlpha() {
+      var _this3 = this;
+
+      var katakanaToHiragana = function katakanaToHiragana(src) {
+        return src.replace(/[\u30a1-\u30f6]/g, function (match) {
+          var chr = match.charCodeAt(0) - 0x60;
+          return String.fromCharCode(chr);
+        });
+      };
+
+      var sortAlphaUp = function sortAlphaUp(a, b) {
+        a = katakanaToHiragana(a.toString());
+        b = katakanaToHiragana(b.toString());
+        if (a < b) {
+          return -1;
+        } else if (a > b) {
+          return 1;
+        } else {
+          return 0;
+        }
+      };
+
+      var sortAlphaDown = function sortAlphaDown(a, b) {
+        a = katakanaToHiragana(a.toString());
+        b = katakanaToHiragana(b.toString());
+        if (b < a) {
+          return -1;
+        } else if (b > a) {
+          return 1;
+        } else {
+          return 0;
+        }
+      };
+
+      this.isSortTypeByAlpha = true;
+      this.isSortTypeByDate = false;
+
+      this.isSortAlphaDown = !this.isSortAlphaDown;
+      var unordered = this.songs.map(function (song) {
+        return song.name;
+      });
+      if (this.isSortAlphaDown) {
+        unordered.sort(sortAlphaDown);
+      } else {
+        unordered.sort(sortAlphaUp);
+      }
+
+      var ordered = [];
+      unordered.forEach(function (u) {
+        _this3.songs.forEach(function (song) {
+          if (u === song.name) {
+            ordered.push(song);
+          }
+        });
+      });
+      this.songs = ordered;
+      this.setDividedSongs(this.currentPage);
+    },
+    sortSongsByDate: function sortSongsByDate() {
+
+      this.isSortTypeByDate = true;
+      this.isSortTypeByAlpha = false;
+
+      this.isSortDateDown = !this.isSortDateDown;
+
+      this.songs = this.songs_org.reverse();
+
+      this.setDividedSongs(this.currentPage);
     }
   }
 });
@@ -20910,6 +21477,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     registerSong: function registerSong() {
       var _this = this;
+
+      if (this.title.length < 1) {
+        return;
+      }
 
       if (this.isRegistering) {
         return;
@@ -21031,43 +21602,126 @@ var render = function() {
     "div",
     { staticClass: "column" },
     [
-      _c(
-        "div",
-        { staticClass: "title" },
-        [
+      _c("nav", { staticClass: "level" }, [
+        _c("div", { staticClass: "level-left" }, [
           _c(
-            "router-link",
-            {
-              attrs: {
-                to: {
-                  name: "artists"
-                }
-              }
-            },
+            "div",
+            { staticClass: "level-item title" },
             [
-              _c("span", { staticClass: "icon is-medium has-text-primary" }, [
-                _c("i", { staticClass: "fas fa-arrow-circle-left" })
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _c("span", { staticClass: "has-text-grey" }, [
-            _vm._v("\n      " + _vm._s(_vm.$route.params.name) + "\n    ")
-          ]),
-          _vm._v(" "),
-          _c("register-song-modal", {
-            attrs: { "artist-id": +_vm.$route.params.id },
-            on: { registered: _vm.reload }
-          })
-        ],
-        1
-      ),
+              _c(
+                "router-link",
+                {
+                  attrs: {
+                    to: {
+                      name: "artists"
+                    }
+                  }
+                },
+                [
+                  _c(
+                    "span",
+                    { staticClass: "icon is-medium has-text-primary" },
+                    [_c("i", { staticClass: "fas fa-arrow-circle-left" })]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c("span", { staticClass: "has-text-grey" }, [
+                _vm._v(
+                  "\n          " + _vm._s(_vm.$route.params.name) + "\n        "
+                )
+              ]),
+              _vm._v(" "),
+              _c("register-song-modal", {
+                attrs: { "artist-id": +_vm.$route.params.id },
+                on: { registered: _vm.reload }
+              })
+            ],
+            1
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "level level-right is-mobile" }, [
+          _c("div", { staticClass: "level-right" }, [
+            _c(
+              "div",
+              {
+                staticClass: "level-item",
+                on: { click: _vm.sortSongsByAlpha }
+              },
+              [
+                _vm.isSortAlphaDown
+                  ? _c(
+                      "span",
+                      {
+                        class: {
+                          "icon is-medium has-text-primary":
+                            _vm.isSortTypeByAlpha,
+                          "icon is-medium has-text-grey": !_vm.isSortTypeByAlpha
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-sort-alpha-down" })]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                !_vm.isSortAlphaDown
+                  ? _c(
+                      "span",
+                      {
+                        class: {
+                          "icon is-medium has-text-primary":
+                            _vm.isSortTypeByAlpha,
+                          "icon is-medium has-text-grey": !_vm.isSortTypeByAlpha
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-sort-alpha-up" })]
+                    )
+                  : _vm._e()
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "level-item", on: { click: _vm.sortSongsByDate } },
+              [
+                !_vm.isSortDateDown
+                  ? _c(
+                      "span",
+                      {
+                        class: {
+                          "icon is-medium has-text-primary":
+                            _vm.isSortTypeByDate,
+                          "icon is-medium has-text-grey": !_vm.isSortTypeByDate
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-sort-amount-down" })]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.isSortDateDown
+                  ? _c(
+                      "span",
+                      {
+                        class: {
+                          "icon is-medium has-text-primary":
+                            _vm.isSortTypeByDate,
+                          "icon is-medium has-text-grey": !_vm.isSortTypeByDate
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-sort-amount-up" })]
+                    )
+                  : _vm._e()
+              ]
+            )
+          ])
+        ])
+      ]),
       _vm._v(" "),
       !_vm.isLoading
         ? _c(
             "div",
             { staticClass: "tile is-ancestor" },
-            _vm._l(_vm.songs, function(song) {
+            _vm._l(_vm.dividedSongs, function(song) {
               return _c(
                 "div",
                 { staticClass: "tile is-parent is-4 song" },
@@ -21098,8 +21752,12 @@ var render = function() {
                       }
                     },
                     [
-                      _c("p", { staticClass: "title" }, [
+                      _c("p", { staticClass: "title is-3" }, [
                         _vm._v(_vm._s(song.name))
+                      ]),
+                      _vm._v(" "),
+                      _c("p", { staticClass: "subtitle is-5" }, [
+                        _vm._v("歌った回数: " + _vm._s(song.detail_count))
                       ])
                     ]
                   )
@@ -21107,6 +21765,107 @@ var render = function() {
                 1
               )
             })
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.songs.length > 0
+        ? _c(
+            "nav",
+            {
+              staticClass: "pagination",
+              attrs: { role: "navigation", "aria-label": "pagination" }
+            },
+            [
+              _c(
+                "ul",
+                { staticClass: "pagination-list" },
+                [
+                  _c("li", [
+                    _c(
+                      "a",
+                      {
+                        class: {
+                          "pagination-link is-current": 1 === _vm.currentPage,
+                          "pagination-link": 1 !== _vm.currentPage
+                        },
+                        on: {
+                          click: function($event) {
+                            _vm.setDividedSongs(1)
+                          }
+                        }
+                      },
+                      [_vm._v("1")]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _vm.isDispLeftEllipsis()
+                    ? _c("li", [
+                        _c("span", { staticClass: "pagination-ellipsis" }, [
+                          _vm._v("…")
+                        ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm._l(_vm.totalNumberOfPages, function(pageNum) {
+                    return _vm.isDispCenterSide(pageNum)
+                      ? _c("li", [
+                          _c(
+                            "a",
+                            {
+                              class: {
+                                "pagination-link is-current":
+                                  pageNum === _vm.currentPage,
+                                "pagination-link": pageNum !== _vm.currentPage
+                              },
+                              on: {
+                                click: function($event) {
+                                  _vm.setDividedSongs(pageNum)
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n          " + _vm._s(pageNum) + "\n        "
+                              )
+                            ]
+                          )
+                        ])
+                      : _vm._e()
+                  }),
+                  _vm._v(" "),
+                  _vm.isDispRightEllipsis()
+                    ? _c("li", [
+                        _c("span", { staticClass: "pagination-ellipsis" }, [
+                          _vm._v("…")
+                        ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("li", [
+                    _vm.totalNumberOfPages != 1
+                      ? _c(
+                          "a",
+                          {
+                            class: {
+                              "pagination-link is-current":
+                                _vm.totalNumberOfPages === _vm.currentPage,
+                              "pagination-link":
+                                _vm.totalNumberOfPages !== _vm.currentPage
+                            },
+                            on: {
+                              click: function($event) {
+                                _vm.setDividedSongs(_vm.totalNumberOfPages)
+                              }
+                            }
+                          },
+                          [_vm._v(_vm._s(_vm.totalNumberOfPages))]
+                        )
+                      : _vm._e()
+                  ])
+                ],
+                2
+              )
+            ]
           )
         : _vm._e(),
       _vm._v(" "),
@@ -21211,7 +21970,7 @@ exports = module.exports = __webpack_require__(1)(false);
 
 
 // module
-exports.push([module.i, "\ntbody tr[data-v-530f1495] {\r\n  cursor: pointer;\n}\n.editbtn[data-v-530f1495]{\r\n  cursor:pointer ;\n}\r\n", ""]);
+exports.push([module.i, "\ntbody tr[data-v-530f1495] {\r\n  cursor: pointer;\n}\n.editbtn[data-v-530f1495]{\r\n  cursor:pointer ;\n}\n.kikimimi[data-v-530f1495]{\r\n  margin-bottom: 0 ;\n}\r\n", ""]);
 
 // exports
 
@@ -21228,6 +21987,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EditSongDetailModal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__EditSongDetailModal_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LoadingDisplayModal_vue__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LoadingDisplayModal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__LoadingDisplayModal_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__EditKikimimiModal_vue__ = __webpack_require__(148);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__EditKikimimiModal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__EditKikimimiModal_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ShowKikimimiModal_vue__ = __webpack_require__(153);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ShowKikimimiModal_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__ShowKikimimiModal_vue__);
 //
 //
 //
@@ -21300,6 +22063,63 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 
 
@@ -21308,20 +22128,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      songdetails: null,
+      songdetails: [],
       categories: null,
       isDetailsLoading: false,
       isCategoriesLoading: false,
       isCategoryEditing: false,
       isCategoryAdding: false,
       isCategoryDeleting: false,
-      categoryName: ""
+      categoryName: "",
+      dividedSongDetails: null,
+      currentPage: 1,
+      DIVIDEDBY: 5,
+      isKikimimiEditing: false,
+      isKikimimiLoading: false,
+      hasEmbedURL: false,
+      embedURL: '',
+      isKikimimiModal: false
     };
   },
   components: {
     RegisterSongDetailModal: __WEBPACK_IMPORTED_MODULE_0__RegisterSongDetailModal_vue___default.a,
     EditSongDetailModal: __WEBPACK_IMPORTED_MODULE_1__EditSongDetailModal_vue___default.a,
-    LoadingDisplayModal: __WEBPACK_IMPORTED_MODULE_2__LoadingDisplayModal_vue___default.a
+    LoadingDisplayModal: __WEBPACK_IMPORTED_MODULE_2__LoadingDisplayModal_vue___default.a,
+    EditKikimimiModal: __WEBPACK_IMPORTED_MODULE_3__EditKikimimiModal_vue___default.a,
+    ShowKikimimiModal: __WEBPACK_IMPORTED_MODULE_4__ShowKikimimiModal_vue___default.a
   },
   created: function created() {
     this.getDatas();
@@ -21329,43 +22159,130 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
   computed: {
     isSomeLoading: function isSomeLoading() {
-      return this.isDetailsLoading || this.isCategoriesLoading || this.isCategoryAdding || this.isCategoryDeleting;
+      return this.isDetailsLoading || this.isCategoriesLoading || this.isCategoryAdding || this.isCategoryDeleting || this.isKikimimiLoading;
+    },
+    totalNumberOfPages: function totalNumberOfPages() {
+      var total = 0;
+      var song_details_count = this.songdetails.length;
+      total += Math.floor(song_details_count / this.DIVIDEDBY);
+      if (song_details_count % this.DIVIDEDBY !== 0) {
+        total += 1;
+      }
+      return total;
     }
   },
   methods: {
-    close: function close(songdetail) {
+    editKikimimi: function editKikimimi() {
+      this.isKikimimiEditing = true;
+    },
+    showKikimimi: function showKikimimi() {
+      if (!this.hasEmbedURL) {
+        return;
+      }
+      this.isKikimimiModal = true;
+    },
+    getKikimimi: function getKikimimi() {
+      var _this = this;
+
+      if (this.isKikimimiLoading) {
+        return;
+      }
+      this.isKikimimiLoading = true;
+
+      axios.get('/api/songs/' + this.$route.params.id + '/URL').then(function (res) {
+        var URL = res.data;
+        if (URL.length > 0) {
+          _this.youtubeURL = URL;
+          _this.hasEmbedURL = true;
+        } else {
+          _this.youtubeURL = '';
+          _this.hasEmbedURL = false;
+        }
+
+        _this.isKikimimiLoading = false;
+      });
+    },
+    setDividedSongDetails: function setDividedSongDetails(pageNum) {
+      this.currentPage = pageNum;
+
+      this.dividedSongDetails = this.songdetails.slice((this.currentPage - 1) * this.DIVIDEDBY, this.DIVIDEDBY * this.currentPage);
+    },
+    isDispLeftEllipsis: function isDispLeftEllipsis() {
+      if (this.currentPage > 3 && 5 < this.totalNumberOfPages) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    isDispRightEllipsis: function isDispRightEllipsis() {
+      if (this.currentPage < this.totalNumberOfPages - 2 && 5 < this.totalNumberOfPages) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    isDispCenterSide: function isDispCenterSide(pageNum) {
+      if (pageNum === 1) {
+        return false;
+      }
+      if ((this.currentPage === 1 || this.currentPage === 2) && pageNum != this.totalNumberOfPages && (pageNum === 3 || pageNum === 4)) {
+        return true;
+      }
+
+      if (pageNum === this.totalNumberOfPages) {
+        return false;
+      }
+      //現在のページが最後かその直前の場合、
+      //最後から2つ前と3つ前のページを表示させる
+      if ((this.currentPage === this.totalNumberOfPages || this.currentPage === this.totalNumberOfPages - 1) && (pageNum === this.totalNumberOfPages - 2 || pageNum === this.totalNumberOfPages - 3)) {
+        return true;
+      }
+
+      if (pageNum === this.currentPage - 1 || pageNum === this.currentPage || pageNum === this.currentPage + 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    close: function close() {
       this.reload();
+
+      this.isKikimimiModal = false;
+      this.isKikimimiEditing = false;
     },
     editDetail: function editDetail(songdetail) {
       songdetail.edit = true;
     },
     getSongDetails: function getSongDetails() {
-      var _this = this;
+      var _this2 = this;
 
       if (this.isDetailsLoading) {
         return;
       }
       this.isDetailsLoading = true;
       axios.get('/api/songs/' + this.$route.params.id).then(function (res) {
-        _this.isDetailsLoading = false;
-        _this.songdetails = res.data.data;
+        _this2.isDetailsLoading = false;
+        _this2.songdetails = res.data.data;
+
+        _this2.setDividedSongDetails(1);
       });
     },
     getSongCategories: function getSongCategories() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (this.isCategoriesLoading) {
         return;
       }
       this.isCategoriesLoading = true;
       axios.get('/api/categories/' + this.$route.params.id).then(function (res) {
-        _this2.isCategoriesLoading = false;
-        _this2.categories = res.data.data;
+        _this3.isCategoriesLoading = false;
+        _this3.categories = res.data.data;
       });
     },
     getDatas: function getDatas() {
       this.getSongCategories();
       this.getSongDetails();
+      this.getKikimimi();
     },
     reload: function reload() {
       this.getDatas();
@@ -21374,7 +22291,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       this.isCategoryEditing = !this.isCategoryEditing;
     },
     addCategory: function addCategory() {
-      var _this3 = this;
+      var _this4 = this;
 
       if (this.categoryName.length == 0) {
         return;
@@ -21389,13 +22306,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         song_id: this.$route.params.id,
         name: this.categoryName
       }).then(function (res) {
-        _this3.categoryName = "";
-        _this3.categories = res.data.data;
-        _this3.isCategoryAdding = false;
+        _this4.categoryName = "";
+        _this4.categories = res.data.data;
+        _this4.isCategoryAdding = false;
       });
     },
     deleteCategory: function deleteCategory(id) {
-      var _this4 = this;
+      var _this5 = this;
 
       if (!confirm('このタグを削除しますか？')) {
         return;
@@ -21406,8 +22323,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
       this.isCategoryDeleting = true;
       axios.delete('/api/categories/' + id).then(function (res) {
-        _this4.categories = _this4.categories = res.data.data;
-        _this4.isCategoryDeleting = false;
+        _this5.categories = _this5.categories = res.data.data;
+        _this5.isCategoryDeleting = false;
       });
     }
   }
@@ -22073,41 +22990,93 @@ var render = function() {
     "div",
     { staticClass: "column" },
     [
-      _c(
-        "div",
-        { staticClass: "title" },
-        [
+      _c("div", { staticClass: "level" }, [
+        _c("div", { staticClass: "level-left" }, [
           _c(
-            "router-link",
-            {
-              attrs: {
-                to: {
-                  name: "songs",
-                  params: {
-                    name: _vm.$route.params.artist_name,
-                    id: _vm.$route.params.artist_id
-                  }
-                }
-              }
-            },
+            "div",
+            { staticClass: "level-item title" },
             [
-              _c("span", { staticClass: "icon is-medium has-text-primary" }, [
-                _c("i", { staticClass: "fas fa-arrow-circle-left" })
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _c("span", { staticClass: "has-text-grey" }, [
-            _vm._v(_vm._s(_vm.$route.params.song_name))
-          ]),
-          _vm._v(" "),
-          _c("register-song-detail-modal", {
-            attrs: { "song-id": +_vm.$route.params.id },
-            on: { registered: _vm.reload }
-          })
-        ],
-        1
-      ),
+              _c(
+                "router-link",
+                {
+                  attrs: {
+                    to: {
+                      name: "songs",
+                      params: {
+                        name: _vm.$route.params.artist_name,
+                        id: _vm.$route.params.artist_id
+                      }
+                    }
+                  }
+                },
+                [
+                  _c(
+                    "span",
+                    { staticClass: "icon is-medium has-text-primary" },
+                    [_c("i", { staticClass: "fas fa-arrow-circle-left" })]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c("span", { staticClass: "has-text-grey" }, [
+                _vm._v(_vm._s(_vm.$route.params.song_name))
+              ]),
+              _vm._v(" "),
+              _c("register-song-detail-modal", {
+                attrs: { "song-id": +_vm.$route.params.id },
+                on: { registered: _vm.reload }
+              })
+            ],
+            1
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "content" }, [
+        _c("div", { staticClass: "field is-grouped is-grouped-multiline" }, [
+          _c(
+            "div",
+            { staticClass: "control" },
+            [
+              _c(
+                "span",
+                {
+                  staticClass: "tag is-primary editbtn",
+                  on: { click: _vm.editKikimimi }
+                },
+                [_vm._v("聞き耳編集")]
+              ),
+              _vm._v(" "),
+              _vm.isKikimimiEditing
+                ? _c("edit-kikimimi-modal", {
+                    attrs: { "song-id": +_vm.$route.params.id },
+                    on: { close: _vm.close }
+                  })
+                : _vm._e(),
+              _vm._v(" "),
+              _c(
+                "span",
+                {
+                  class: {
+                    "icon is-medium has-text-primary editbtn": _vm.hasEmbedURL,
+                    "icon is-medium has-text-grey": !_vm.hasEmbedURL
+                  },
+                  on: { click: _vm.showKikimimi }
+                },
+                [_c("i", { staticClass: "fas fa-headphones" })]
+              ),
+              _vm._v(" "),
+              _vm.isKikimimiModal
+                ? _c("show-kikimimi-modal", {
+                    attrs: { URL: _vm.youtubeURL },
+                    on: { close: _vm.close }
+                  })
+                : _vm._e()
+            ],
+            1
+          )
+        ])
+      ]),
       _vm._v(" "),
       _c("div", { staticClass: "content" }, [
         _c(
@@ -22225,7 +23194,7 @@ var render = function() {
           _vm._v(" "),
           _c(
             "tbody",
-            _vm._l(_vm.songdetails, function(songdetail) {
+            _vm._l(_vm.dividedSongDetails, function(songdetail) {
               return _c(
                 "tr",
                 {
@@ -22252,9 +23221,7 @@ var render = function() {
                         on: {
                           edited: _vm.reload,
                           deleted: _vm.reload,
-                          close: function($event) {
-                            _vm.close(songdetail)
-                          }
+                          close: _vm.close
                         }
                       })
                     : _vm._e()
@@ -22265,6 +23232,111 @@ var render = function() {
           )
         ]
       ),
+      _vm._v(" "),
+      _vm.totalNumberOfPages > 0
+        ? _c(
+            "nav",
+            {
+              staticClass: "pagination",
+              attrs: { role: "navigation", "aria-label": "pagination" }
+            },
+            [
+              _c(
+                "ul",
+                { staticClass: "pagination-list" },
+                [
+                  _c("li", [
+                    _c(
+                      "a",
+                      {
+                        class: {
+                          "pagination-link is-current": 1 === _vm.currentPage,
+                          "pagination-link": 1 !== _vm.currentPage
+                        },
+                        on: {
+                          click: function($event) {
+                            _vm.setDividedSongDetails(1)
+                          }
+                        }
+                      },
+                      [_vm._v("1")]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _vm.isDispLeftEllipsis()
+                    ? _c("li", [
+                        _c("span", { staticClass: "pagination-ellipsis" }, [
+                          _vm._v("…")
+                        ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm._l(_vm.totalNumberOfPages, function(pageNum) {
+                    return _vm.isDispCenterSide(pageNum)
+                      ? _c("li", [
+                          _c(
+                            "a",
+                            {
+                              class: {
+                                "pagination-link is-current":
+                                  pageNum === _vm.currentPage,
+                                "pagination-link": pageNum !== _vm.currentPage
+                              },
+                              on: {
+                                click: function($event) {
+                                  _vm.setDividedSongDetails(pageNum)
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\r\n          " +
+                                  _vm._s(pageNum) +
+                                  "\r\n        "
+                              )
+                            ]
+                          )
+                        ])
+                      : _vm._e()
+                  }),
+                  _vm._v(" "),
+                  _vm.isDispRightEllipsis()
+                    ? _c("li", [
+                        _c("span", { staticClass: "pagination-ellipsis" }, [
+                          _vm._v("…")
+                        ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("li", [
+                    _vm.totalNumberOfPages != 1 && _vm.totalNumberOfPages > 0
+                      ? _c(
+                          "a",
+                          {
+                            class: {
+                              "pagination-link is-current":
+                                _vm.totalNumberOfPages === _vm.currentPage,
+                              "pagination-link":
+                                _vm.totalNumberOfPages !== _vm.currentPage
+                            },
+                            on: {
+                              click: function($event) {
+                                _vm.setDividedSongDetails(
+                                  _vm.totalNumberOfPages
+                                )
+                              }
+                            }
+                          },
+                          [_vm._v(_vm._s(_vm.totalNumberOfPages))]
+                        )
+                      : _vm._e()
+                  ])
+                ],
+                2
+              )
+            ]
+          )
+        : _vm._e(),
       _vm._v(" "),
       _vm.isSomeLoading ? _c("loading-display-modal") : _vm._e()
     ],
@@ -68254,6 +69326,17 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "MyHeader",
@@ -69124,12 +70207,16 @@ var render = function() {
               _vm._v(" "),
               _c("span", { staticClass: "logo" }, [_vm._v("KARAOKE DIARY")])
             ]
-          )
+          ),
+          _vm._v(" "),
+          _vm._m(0)
         ],
         1
       ),
       _vm._v(" "),
-      _c("div", { staticClass: "navbar-item navbar-end" }, [
+      _vm._m(1),
+      _vm._v(" "),
+      _c("div", { staticClass: "navbar-end" }, [
         _c("div", { staticClass: "field is-grouped" }, [
           !_vm.isLogin
             ? _c(
@@ -69160,7 +70247,40 @@ var render = function() {
     ]
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      {
+        staticClass: "navbar-burger burger",
+        attrs: {
+          role: "button",
+          "aria-label": "menu",
+          "aria-expanded": "false",
+          "data-target": "navbarBasicExample"
+        }
+      },
+      [
+        _c("span", { attrs: { "aria-hidden": "true" } }),
+        _vm._v(" "),
+        _c("span", { attrs: { "aria-hidden": "true" } }),
+        _vm._v(" "),
+        _c("span", { attrs: { "aria-hidden": "true" } })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "navbar-start" }, [
+      _c("div", { staticClass: "navbar-item" })
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -69175,6 +70295,481 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 139 */,
+/* 140 */,
+/* 141 */,
+/* 142 */,
+/* 143 */,
+/* 144 */,
+/* 145 */,
+/* 146 */,
+/* 147 */,
+/* 148 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(149)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(151)
+/* template */
+var __vue_template__ = __webpack_require__(152)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-63443154"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/EditKikimimiModal.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-63443154", Component.options)
+  } else {
+    hotAPI.reload("data-v-63443154", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 149 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(150);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("1045581e", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-63443154\",\"scoped\":true,\"hasInlineConfig\":true}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./EditKikimimiModal.vue", function() {
+     var newContent = require("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-63443154\",\"scoped\":true,\"hasInlineConfig\":true}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./EditKikimimiModal.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 150 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 151 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__ModalBase_vue__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: { ModalBase: __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue___default.a },
+  data: function data() {
+    return {
+      modal: true,
+      youtubeURL: '',
+      isURLError: false,
+      isLoading: false
+    };
+  },
+
+  props: {
+    songId: {
+      type: Number,
+      required: true
+    }
+  },
+  methods: {
+    closeModal: function closeModal() {
+      this.score = '';
+      this.comment = '';
+      this.$emit('close');
+      this.modal = false;
+    },
+    editKikimimi: function editKikimimi() {
+      var _this = this;
+
+      var validationURL = 'https://www.youtube.com/watch?v=';
+      if (this.youtubeURL.indexOf(validationURL) === -1) {
+        this.isURLError = true;
+        return;
+      }
+
+      if (this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
+
+      axios.post('/api/songs/updateURL', {
+        id: this.songId,
+        youtubeURL: this.youtubeURL
+      }).then(function (res) {
+        _this.youtubeURL = "";
+        _this.isURLError = false;
+        _this.isLoading = false;
+        _this.closeModal();
+        _this.$emit('edited');
+      });
+    },
+    deleteSongDetail: function deleteSongDetail() {
+      var _this2 = this;
+
+      if (!confirm('このデータを削除しますか？')) {
+        return;
+      }
+
+      if (this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
+      axios.delete('/api/song_details/' + this.songDetailId).then(function (res) {
+        _this2.isLoading = false;
+        _this2.closeModal();
+        _this2.$emit('deleted');
+      });
+    }
+
+  }
+});
+
+/***/ }),
+/* 152 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm.modal
+    ? _c(
+        "ModalBase",
+        { on: { close: _vm.closeModal } },
+        [
+          _c("div", { staticClass: "field" }, [
+            _c("label", { staticClass: "label has-text-grey" }, [
+              _vm._v("YoutubeのURL")
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "control" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.youtubeURL,
+                    expression: "youtubeURL"
+                  }
+                ],
+                staticClass: "input is-primary",
+                attrs: {
+                  id: "input",
+                  type: "text",
+                  placeholder: "https://www.youtube..."
+                },
+                domProps: { value: _vm.youtubeURL },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.youtubeURL = $event.target.value
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _vm.isURLError
+              ? _c("p", { staticClass: "help is-danger" }, [
+                  _vm._v("URLに誤りがあります")
+                ])
+              : _vm._e()
+          ]),
+          _vm._v(" "),
+          _c("template", { slot: "submit" }, [
+            _c(
+              "button",
+              {
+                class: {
+                  "button is-primary is-loading": _vm.isLoading,
+                  "button is-primary": !_vm.isLoading
+                },
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    return _vm.editKikimimi($event)
+                  }
+                }
+              },
+              [_vm._v("更新")]
+            )
+          ])
+        ],
+        2
+      )
+    : _vm._e()
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-63443154", module.exports)
+  }
+}
+
+/***/ }),
+/* 153 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(158)
+}
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(156)
+/* template */
+var __vue_template__ = __webpack_require__(157)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-5c462e7e"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/ShowKikimimiModal.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5c462e7e", Component.options)
+  } else {
+    hotAPI.reload("data-v-5c462e7e", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 154 */,
+/* 155 */,
+/* 156 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__ModalBase_vue__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: { ModalBase: __WEBPACK_IMPORTED_MODULE_0__ModalBase_vue___default.a },
+  data: function data() {
+    return {
+      modal: true,
+      isLoading: false
+    };
+  },
+
+  props: {
+    URL: {
+      type: String,
+      required: true
+    }
+  },
+  methods: {
+    closeModal: function closeModal() {
+      this.$emit('close');
+      this.modal = false;
+    }
+  }
+});
+
+/***/ }),
+/* 157 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm.modal
+    ? _c(
+        "ModalBase",
+        { on: { close: _vm.closeModal } },
+        [
+          _c("div", { staticClass: "video" }, [
+            _c("iframe", {
+              attrs: {
+                src: _vm.URL,
+                frameborder: "0",
+                allow:
+                  "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture",
+                allowfullscreen: ""
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("template", { slot: "submit" }, [
+            _c(
+              "button",
+              {
+                staticClass: "button is-primary",
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    return _vm.closeModal($event)
+                  }
+                }
+              },
+              [_vm._v("閉じる")]
+            )
+          ])
+        ],
+        2
+      )
+    : _vm._e()
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-5c462e7e", module.exports)
+  }
+}
+
+/***/ }),
+/* 158 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(159);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("5f778664", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5c462e7e\",\"scoped\":true,\"hasInlineConfig\":true}!../../../node_modules/sass-loader/lib/loader.js!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ShowKikimimiModal.vue", function() {
+     var newContent = require("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5c462e7e\",\"scoped\":true,\"hasInlineConfig\":true}!../../../node_modules/sass-loader/lib/loader.js!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ShowKikimimiModal.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 159 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
 
 /***/ })
 /******/ ]);

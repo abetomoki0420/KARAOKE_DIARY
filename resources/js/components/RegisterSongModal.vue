@@ -46,6 +46,10 @@ export default {
       this.modal = false
     },
     registerSong: function(){
+      if(this.title.length < 1 ){
+        return
+      }
+
       if(this.isRegistering){
         return
       }

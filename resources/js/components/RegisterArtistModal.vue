@@ -46,6 +46,10 @@ export default {
       this.modal = false
     },
     registerArtist: function(){
+      if(this.name.length < 1 ){
+        return 
+      }
+
       if(this.isRegistering){
         return
       }

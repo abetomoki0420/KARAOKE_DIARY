@@ -5,8 +5,19 @@
         <span><i class="fas fa-microphone fa-2x"></i></span>
         <span class="logo">KARAOKE DIARY</span>
       </router-link>
+
+      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
     </div>
-    <div class="navbar-item navbar-end">
+    <div class="navbar-start">
+      <div class="navbar-item">
+
+      </div>
+    </div>
+    <div class="navbar-end">
       <div class="field is-grouped">
         <div class="button is-primary" @click="login" v-if="!isLogin">
           Login

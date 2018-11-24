@@ -20,6 +20,7 @@ class Song extends JsonResource
           'artist_id' => $this->artist_id ,
           'artist_name' => $this->artist->name ,
           'name' => $this->name ,
+          'detail_count' => $this->details->count() ,
         ];
     }
 }
