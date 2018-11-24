@@ -1,8 +1,16 @@
 <template>
     <ModalBase @close="closeModal" v-if="modal">
-        <div class="video">
-          <iframe :src="URL" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <div class="container">
+        <div class="app-information has-text-grey">
+          <p>KARAOKE DIARYは</p>
+          <p>カラオケレパートリーの管理を</p>
+          <p>行うためのアプリです</p>
+          <p>アーティスト・曲名・点数の記録</p>
+          <p>Youtube動画による歌い出しの確認</p>
+          <p>タグの設定</p>
+          <p>を行うことが出来ます</p>
         </div>
+      </div>
       <template slot="submit">
         <button class="button is-primary" @click.prevent="closeModal">閉じる</button>
       </template>

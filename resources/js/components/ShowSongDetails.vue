@@ -303,6 +303,10 @@ export default {
         return
       }
 
+      if(this.categories.length >= 5){
+        return
+      }
+
       if(this.isCategoryAdding){
         return
       }
