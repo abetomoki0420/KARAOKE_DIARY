@@ -40,8 +40,22 @@ export default {
       this.modal = false
     },
     editKikimimi: function(){
-      const validationURL = 'https://www.youtube.com/watch?v='
-      if( this.youtubeURL.indexOf( validationURL ) === -1 ){
+      const isValidate = (url) => {
+        const validationURLs = [
+          'https://www.youtube.com/watch?v=',
+          'https://youtu.be/'
+        ]
+
+        validationURLs.forEach( (validationURL) => {
+          if( url.indexOf(validationURL) != -1){
+            return true
+          }
+        })
+
+        return false
+      }
+
+      if(isValidate(this.youtubeURL)){
         this.isURLError = true
         return
       }

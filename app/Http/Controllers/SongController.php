@@ -58,11 +58,23 @@ class SongController extends Controller
       $baseURL = 'https://www.youtube.com/embed/' ;
 
       $id = $request->input('id','');
+      $url = $request->input('youtubeURL' , '');
+
       $song = Song::find($id);
 
-      $url = $request->input('youtubeURL' , '');
-      $arr = explode('v=' , $url);
-      $youtubeID = $arr[1] ;
+      $arr = '';
+      $youtubeID = '';
+      if(strpos($url , 'v=')){
+        $arr = explode('v=' , $url);
+        $youtubeID = $arr[1] ;
+        if( strpos( $arr[1] , '&feature=youtu.be' ) ){
+          $youtubeID = str_replace('&feature=youtu.be' , '' , $arr[1]);
+        }
+      }else if(strpos($url , 'youtu.be/')){
+        $arr = explode('youtu.be' , $url);
+        $youtubeID = $arr[1] ;
+      }
+
       $embedURL = $baseURL . $youtubeID ;
 
       $song->URL = $embedURL ;
