@@ -24,8 +24,8 @@
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="button is-primary" @click="login" v-if="!isLogin">
-          <i class="fab fa-google"></i> 
-          Googleアカウントでログイン
+          <i class="fab fa-google"></i>
+          <p>Googleアカウントでログイン</p>
         </div>
         <div class="button is-primary" @click="logout" v-if="isLogin">
           <span>Logout</span>
@@ -94,9 +94,10 @@ export default {
     }
   },
   methods: {
-    login: function() {
+    login: async function() {
+      this.$router.push({name:'loging'})
       const provider = new firebase.auth.GoogleAuthProvider()
-      firebase.auth().signInWithRedirect(provider)
+      await firebase.auth().signInWithRedirect(provider)
     },
     logout: async function() {
         await firebase.auth().signOut();

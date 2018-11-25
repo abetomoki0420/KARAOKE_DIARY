@@ -14,6 +14,11 @@ const router = new VueRouter({
       name: 'main'
     },
     {
+      path: '/loging' ,
+      component: require('./components/LoginWaiting.vue') ,
+      name: 'loging'
+    },
+    {
       path: '/register-song' ,
       component: require('./components/RegisterSong.vue') ,
       name: 'register-song' ,
