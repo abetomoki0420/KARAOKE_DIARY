@@ -24,8 +24,7 @@
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="button is-primary" @click="login" v-if="!isLogin">
-          <i class="fab fa-google"></i>
-          <p>Googleアカウントでログイン</p>
+          <p><i class="fab fa-google"></i> Googleアカウントでログイン</p>
         </div>
         <div class="button is-primary" @click="logout" v-if="isLogin">
           <span>Logout</span>
