@@ -5,8 +5,6 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-// require('./bootstrap');
-
 window.Vue = require('vue');
 window.axios = require('axios');
 Vue.prototype.$http = window.axios ;
@@ -29,24 +27,12 @@ window.firebase = firebase  ;
  */
 
 Vue.component('MyHeader', require('./components/MyHeader.vue'));
-// Vue.component('ContentMenu', require('./components/ContentMenu.vue'));
-// Vue.component('example-component', require('./components/ExampleComponent.vue'));
 
 // const files = require.context('./', true, /\.vue$/i)
 
 // files.keys().map(key => {
 //     return Vue.component(_.last(key.split('/')).split('.')[0], files(key))
 // })
-
-/* Add Fontawesome Components */
-// import { library } from '@fortawesome/fontawesome-svg-core'
-// import { faCoffee } from '@fortawesome/free-solid-svg-icons'
-// import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-//
-// library.add(faCoffee)
-//
-// Vue.component('font-awesome-icon', FontAwesomeIcon)
-
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
